@@ -274,6 +274,12 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 	/** Field ID of the method stubs check boxes. */
 	protected final static String METHODS= PAGE_NAME + ".methods"; //$NON-NLS-1$
 
+	protected boolean fIsS2Junit4;
+	
+	public boolean isS2JUnit4() {
+		return fIsS2Junit4;
+	}
+	
 	private static class InterfaceWrapper {
 		public String interfaceName;
 
@@ -1958,9 +1964,15 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 				imports= new ImportsManager(astRoot);
 				// add an import that will be removed again. Having this import solves 14661
 				imports.addImport(JavaModelUtil.concatenateName(pack.getElementName(), typeName));
-				imports.addImport("org.junit.runner.RunWith");
-				imports.addImport("org.seasar.framework.unit.Seasar2");
-				String typeContent= new StringBuffer("@RunWith(Seasar2.class)").append(lineDelimiter).append(constructTypeStub(parentCU, imports, lineDelimiter)).toString();
+				String typeContent = null;
+				if(isS2JUnit4()) {
+					imports.addImport("org.junit.runner.RunWith");
+					imports.addImport("org.seasar.framework.unit.Seasar2");
+					typeContent= new StringBuffer("@RunWith(Seasar2.class)").append(lineDelimiter).append(constructTypeStub(parentCU, imports, lineDelimiter)).toString();
+
+				} else {
+					typeContent= constructTypeStub(parentCU, imports, lineDelimiter);
+				}
 				
 				int index= cuContent.lastIndexOf(simpleTypeStub);
 				if (index == -1) {

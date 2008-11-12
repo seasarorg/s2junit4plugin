@@ -104,6 +104,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 	 * @since 3.2 
 	 */
 	public final static String JUNIT4TOGGLE= PAGE_NAME + ".junit4toggle"; //$NON-NLS-1$
+	public final static String S2JUNIT4TOGGLE= PAGE_NAME + ".s2junit4toggle"; //$NON-NLS-1$
 	
 	private static final String COMPLIANCE_PAGE_ID= "org.eclipse.jdt.ui.propertyPages.CompliancePreferencePage"; //$NON-NLS-1$
 	private static final String BUILD_PATH_PAGE_ID= "org.eclipse.jdt.ui.propertyPages.BuildPathsPropertyPage"; //$NON-NLS-1$
@@ -145,9 +146,11 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 
 
 	private Button fJUnit4Toggle;
+	private Button fS2JUnit4Toggle;
 	private boolean fIsJunit4;
 	private IStatus fJunit4Status; // status
 	private boolean fIsJunit4Enabled;
+	private boolean fIsS2Junit4Enabled;
 	private Link fLink;
 	private Label fImage;
 
@@ -184,6 +187,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		
 		fJunit4Status= new JUnitStatus();
 		fIsJunit4= false;
+		fIsS2Junit4= false;
 	}
 
 	/**
@@ -244,6 +248,17 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		}
 		setJUnit4(isJunit4, true);
 		
+		boolean isS2Junit4= false;
+		if (element != null && element.getElementType() != IJavaElement.JAVA_MODEL) {
+			IJavaProject project= element.getJavaProject();
+			try {
+				isS2Junit4= project.findType("org.seasar.framework.unit.Seasar2") != null;
+			} catch (JavaModelException e) {
+				// ignore
+			}
+		}
+		setS2JUnit4(isS2Junit4, true);
+		
 		updateStatus(getStatusList());
 	}
 	
@@ -269,6 +284,15 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		internalSetJUnit4(isJUnit4);
 	}
 	
+	public void setS2JUnit4(boolean isS2JUnit4, boolean isEnabled) {
+		fIsS2Junit4Enabled= isEnabled;
+		if (fS2JUnit4Toggle != null && !fS2JUnit4Toggle.isDisposed()) {
+			fS2JUnit4Toggle.setSelection(isS2JUnit4);
+			fS2JUnit4Toggle.setEnabled(isEnabled);
+		}
+		internalSetS2JUnit4(isS2JUnit4);
+	}
+	
 	/**
 	 * Returns <code>true</code> if the test should be created as Junit 4 test
 	 * @return returns <code>true</code> if the test should be created as Junit 4 test
@@ -290,6 +314,39 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		handleFieldChanged(JUNIT4TOGGLE);
 	}
 	
+	private void internalSetJUnit3(boolean isJUnit3) {
+		fIsJunit4= !isJUnit3;
+		fJunit4Status= junit4Changed();
+		if (fIsJunit4) {
+			setSuperClass("java.lang.Object", false); //$NON-NLS-1$
+		} else {
+			setSuperClass(JUnitPlugin.TEST_SUPERCLASS_NAME, true);
+		}
+		handleFieldChanged(JUNIT4TOGGLE);
+	}
+	
+	private void internalSetS2JUnit4(boolean isS2JUnit4) {
+		fIsS2Junit4= isS2JUnit4;
+		fJunit4Status= junit4Changed();
+		if (fIsS2Junit4) {
+			setSuperClass("java.lang.Object", false); //$NON-NLS-1$
+		} else {
+			setSuperClass("org.seasar.extension.unit.S2TestCase", true);
+		}
+		handleFieldChanged(S2JUNIT4TOGGLE);
+	}
+	
+	private void internalSetS2Unit(boolean isS2Unit) {
+		fIsS2Junit4= !isS2Unit;
+		fJunit4Status= junit4Changed();
+		if (fIsS2Junit4) {
+			setSuperClass("java.lang.Object", false); //$NON-NLS-1$
+		} else {
+			setSuperClass("org.seasar.extension.unit.S2TestCase", true);
+		}
+		handleFieldChanged(S2JUNIT4TOGGLE);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.ui.wizards.NewContainerWizardPage#handleFieldChanged(String)
 	 */
@@ -308,6 +365,11 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 			fMethodStubsButtons.setEnabled(IDX_SETUP_CLASS, isJUnit4());
 			fMethodStubsButtons.setEnabled(IDX_TEARDOWN_CLASS, isJUnit4());
 			fMethodStubsButtons.setEnabled(IDX_CONSTRUCTOR, !isJUnit4());
+		} else if (fieldName.equals(S2JUNIT4TOGGLE)) {
+			updateBuildPathMessage();
+			fMethodStubsButtons.setEnabled(IDX_SETUP_CLASS, isS2JUnit4());
+			fMethodStubsButtons.setEnabled(IDX_TEARDOWN_CLASS, isS2JUnit4());
+			fMethodStubsButtons.setEnabled(IDX_CONSTRUCTOR, !isS2JUnit4());
 		}
 		updateStatus(getStatusList());
 	}
@@ -440,32 +502,71 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 	 * @since 3.2
 	 */
 	protected void createJUnit4Controls(Composite composite, int nColumns) {
+		fIsJunit4=false;
+		fIsS2Junit4=true;
 		Composite inner= new Composite(composite, SWT.NONE);
 		inner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, nColumns, 1));
-		GridLayout layout= new GridLayout(2, false);
+		GridLayout layout= new GridLayout(4, false);
 		layout.marginHeight= 0;
 		layout.marginWidth= 0;
 		inner.setLayout(layout);
 		
-		SelectionAdapter listener= new SelectionAdapter() {
+		SelectionAdapter junit3Listener= new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				boolean isSelected= ((Button) e.widget).getSelection();
-				internalSetJUnit4(isSelected);
+				internalSetJUnit3(isSelected);
 			}
 		};
 		
 		Button junti3Toggle= new Button(inner, SWT.RADIO);
 		junti3Toggle.setText(WizardMessages.NewTestCaseWizardPageOne_junit3_radio_label);
 		junti3Toggle.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false, 1, 1));
-		junti3Toggle.setSelection(!fIsJunit4);
+		junti3Toggle.setSelection(false);
 		junti3Toggle.setEnabled(fIsJunit4Enabled);
+		junti3Toggle.addSelectionListener(junit3Listener);
+		
+		SelectionAdapter junit4Listener= new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				boolean isSelected= ((Button) e.widget).getSelection();
+				internalSetJUnit4(isSelected);
+			}
+		};
 		
 		fJUnit4Toggle= new Button(inner, SWT.RADIO);
 		fJUnit4Toggle.setText(WizardMessages.NewTestCaseWizardPageOne_junit4_radio_label);
-		fJUnit4Toggle.setSelection(fIsJunit4);
+		fJUnit4Toggle.setSelection(false);
 		fJUnit4Toggle.setEnabled(fIsJunit4Enabled);
 		fJUnit4Toggle.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false, 1, 1));
-		fJUnit4Toggle.addSelectionListener(listener);
+		fJUnit4Toggle.addSelectionListener(junit4Listener);
+		
+		SelectionAdapter s2UnitListener= new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				boolean isSelected= ((Button) e.widget).getSelection();
+				internalSetS2Unit(isSelected);
+			}
+		};
+		
+		
+		Button s2unitToggle= new Button(inner, SWT.RADIO);
+		s2unitToggle.setText("New S2Unit");
+		s2unitToggle.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false, 1, 1));
+		s2unitToggle.setSelection(false);
+		s2unitToggle.setEnabled(fIsS2Junit4Enabled);
+		s2unitToggle.addSelectionListener(s2UnitListener);
+		
+		SelectionAdapter s2JUnit4Listener= new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				boolean isSelected= ((Button) e.widget).getSelection();
+				internalSetS2JUnit4(isSelected);
+			}
+		};
+		
+		fS2JUnit4Toggle= new Button(inner, SWT.RADIO);
+		fS2JUnit4Toggle.setText("New S2JUnit4");
+		fS2JUnit4Toggle.setSelection(true);
+		fS2JUnit4Toggle.setEnabled(fIsS2Junit4Enabled);
+		fS2JUnit4Toggle.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false, 1, 1));
+		fS2JUnit4Toggle.addSelectionListener(s2JUnit4Listener);
 	}
 	
 	/**
@@ -732,6 +833,10 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		}
 		
 		if (isJUnit4()) { 
+			imports.addStaticImport("org.junit.Assert", "*", false); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		
+		if (isS2JUnit4()) { 
 			imports.addStaticImport("org.seasar.framework.unit.S2Assert", "*", false); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
@@ -915,7 +1020,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 				appendMethodComment(buffer, method);
 			}
 			if (isJUnit4()) {
-//				buffer.append('@').append(imports.addImport(JUnitPlugin.JUNIT4_ANNOTATION_NAME)).append(getLineDelimiter());
+				buffer.append('@').append(imports.addImport(JUnitPlugin.JUNIT4_ANNOTATION_NAME)).append(getLineDelimiter());
 			}
 			
 			buffer.append("public ");//$NON-NLS-1$ 
@@ -1084,7 +1189,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 	 */
 	protected IStatus superClassChanged() {
 		// replaces the super class validation of of the normal type wizard
-		if (isJUnit4()) {
+		if (isJUnit4() || isS2JUnit4()) {
 			return new JUnitStatus();
 		}
 		

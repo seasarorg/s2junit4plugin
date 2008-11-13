@@ -800,13 +800,8 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 	 */
 	protected void createTypeMembers(IType type, ImportsManager imports, IProgressMonitor monitor) throws CoreException {		
 		
-		String typeName = fClassUnderTest.getElementName();
-		if(!StringUtil.isEmpty(typeName)) {
-			if(typeName.endsWith("Service") || typeName.endsWith("Dao")) {
-				StringBuffer buffer = new StringBuffer();
-				buffer.append("private ").append(typeName).append(" " + StringUtil.decapitalize(typeName) + ";");
-				type.createField(buffer.toString(), null, false, monitor);
-			}
+		if (isS2JUnit4()) { 
+			createAutoBindingField(type, monitor);
 		}
 		
 		if (fMethodStubsButtons.isSelected(IDX_CONSTRUCTOR))
@@ -840,6 +835,18 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 			imports.addStaticImport("org.seasar.framework.unit.S2Assert", "*", false); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
+	}
+
+	private void createAutoBindingField(IType type, IProgressMonitor monitor)
+			throws JavaModelException {
+		String typeName = fClassUnderTest.getElementName();
+		if(!StringUtil.isEmpty(typeName)) {
+			if(typeName.endsWith("Service") || typeName.endsWith("Dao")) {
+				StringBuffer buffer = new StringBuffer();
+				buffer.append("private ").append(typeName).append(" " + StringUtil.decapitalize(typeName) + ";");
+				type.createField(buffer.toString(), null, false, monitor);
+			}
+		}
 	}
 
 	private void createConstructor(IType type, ImportsManager imports) throws CoreException {

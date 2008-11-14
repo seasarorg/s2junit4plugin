@@ -38,7 +38,7 @@ public class TestingPair {
     }
 
     private String escapeAllChars(String str) {
-        // ���K�\���̓Nꕶ��
+        // 正規表現の特殊文字
         final String escapeChars = "\\${}?+.[]-()><!|^:=*&,";
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < str.length(); ++i) {
@@ -52,13 +52,13 @@ public class TestingPair {
 
     private String getTestedClassName(String className, String namingRule) {
         int index = className.lastIndexOf('.');
-        // ���K�\���Ŗ��̂��镶���ⷂׂăG�X�P�[�v���Ă���
+        // 正規表現で問題のある文字をすべてエスケープしておく
         namingRule = escapeAllChars(namingRule);
         if (index == -1) {
-            // �f�t�H���g�p�b�P�[�W�̏ꍇ�D
-            // $, {, }�̕����̓G�X�P�[�v����Ă��邽�߁C\$, \{, \} �ƕϊ�����Ă���D
-            // �������BāC�����񒆂ɖ��ߍ��ޏꍇ�́C \$ => \\\\\\$, \{ => \\\\\\{
-            // �ȂǂƂ��Ȃ���΂Ȃ�Ȃ��D
+            // デフォルトパッケージの場合．
+            // $, {, }の文字はエスケープされているため，\$, \{, \} と変換されている．
+            // したがって，文字列中に埋め込む場合は， \$ => \\\\\\$, \{ => \\\\\\{
+            // などとしなければならない．
             namingRule = namingRule.replaceAll("\\\\\\$\\\\\\{package\\\\\\}\\\\\\.", "");
             namingRule = namingRule.replaceAll("\\\\\\$\\\\\\{type\\\\\\}", "(\\\\w+)");
             Pattern p = Pattern.compile(namingRule);

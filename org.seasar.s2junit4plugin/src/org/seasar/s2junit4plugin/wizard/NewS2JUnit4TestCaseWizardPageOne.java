@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -79,6 +80,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.SelectionDialog;
+import org.seasar.s2junit4plugin.Logger;
 import org.seasar.s2junit4plugin.util.StringUtil;
 import org.seasar.s2junit4plugin.wizard.S2JUnit4StubUtility.GenStubSettings;
 
@@ -198,7 +200,18 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 	public void init(IStructuredSelection selection) {
 		IJavaElement element= getInitialJavaElement(selection);
 
-		initContainerPage(element);
+		try {
+			IJavaProject javaProject = element.getJavaProject();
+			IFolder folder = javaProject.getProject().getFolder("src/test/java");// TODO ここはプリファレンスからとってくる
+			if(folder.exists()) {
+				IPackageFragmentRoot findPackageFragmentRoot = javaProject.findPackageFragmentRoot(folder.getFullPath());
+				setPackageFragmentRoot(findPackageFragmentRoot, true);
+			} else {
+				initContainerPage(element);
+			}
+		} catch (JavaModelException e) {
+			Logger.error(e, this);
+		}
 		initTypePage(element);
 		// put default class to test		
 		if (element != null) {

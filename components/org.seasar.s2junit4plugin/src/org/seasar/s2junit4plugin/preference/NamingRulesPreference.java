@@ -6,6 +6,7 @@ import java.util.StringTokenizer;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLayoutData;
@@ -36,9 +37,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.seasar.s2junit4plugin.Messages;
 import org.seasar.s2junit4plugin.action.NamingRule;
+import org.seasar.s2junit4plugin.action.NamingRules;
 
 
-public class NamingRulesPreference {
+public class NamingRulesPreference extends Composite {
     private Shell shell;
     private List namingRulesValue;
 
@@ -48,12 +50,22 @@ public class NamingRulesPreference {
     private Button moveUpButton;
     private Button moveDownButton;
     private int widthHint;
+    private NamingRules namingRules;
 
-    public NamingRulesPreference(List namingRulesValue, Composite parent, int widthHint) {
+    public NamingRulesPreference(IPreferenceStore store, Composite tabFolder, int widthHint) {
+    	super(tabFolder, SWT.NULL);
+    	namingRules = new NamingRules(store);
+    	namingRulesValue = namingRules.get();
+        GridLayout layout= new GridLayout();
+        layout.numColumns= 1;
+        layout.marginWidth= 0;
+        setLayout(layout);
+        GridData data= new GridData(GridData.FILL_BOTH);
+        setLayoutData(data);
     	this.widthHint = widthHint;
-    	create(namingRulesValue, parent);
+    	create(namingRulesValue, this);
     }
-
+    
     private void create(List namingRulesValue, Composite parent) {
         this.namingRulesValue = namingRulesValue;
         shell = parent.getShell();
@@ -67,16 +79,7 @@ public class NamingRulesPreference {
         container.setLayoutData(gd);
         createTable(container);
         createButtons(container);
-        update();
-    }
-
-    public void setValue(List namingRulesValue) {
-        this.namingRulesValue = namingRulesValue;
-        update();
-    }
-
-    public List getValue() {
-        return namingRulesValue;
+        updateView();
     }
 
     private void createTable(Composite container) {
@@ -108,7 +111,7 @@ public class NamingRulesPreference {
             public void checkStateChanged(CheckStateChangedEvent event) {
                 NamingRule namingRule = (NamingRule) event.getElement();
                 namingRule.setEnabled(event.getChecked());
-                update();
+                updateView();
             }
         });
         tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -189,7 +192,7 @@ public class NamingRulesPreference {
         moveDownButton = createButton("moveDownButton", buttonContainer, listener, false); //$NON-NLS-1$
         moveDownButton.setEnabled(false);
      }
-    private void update() {
+    private void updateView() {
         tableViewer.refresh();
         for (int i = 0; i < namingRulesValue.size(); ++i) {
             NamingRule namingRule = (NamingRule) namingRulesValue.get(i);
@@ -223,7 +226,7 @@ public class NamingRulesPreference {
             String value = dialog.getValue();
             if (value.trim().length() != 0) {
                 rule.setValue(value);
-                update();
+                updateView();
             }
         }
     }
@@ -275,7 +278,7 @@ public class NamingRulesPreference {
             if (value.trim().length() != 0) {
                 NamingRule rule = new NamingRule(value, true);
                 namingRulesValue.add(rule);
-                update();
+                updateView();
             }
         }
     }
@@ -286,7 +289,7 @@ public class NamingRulesPreference {
         for (Iterator i = selection.iterator(); i.hasNext(); ) {
              namingRulesValue.remove(i.next());
         }
-        update();
+        updateView();
     }
     private void moveNamingRule(boolean up) {
         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
@@ -299,7 +302,7 @@ public class NamingRulesPreference {
             return;
         namingRulesValue.remove(oldIndex);
         namingRulesValue.add(newIndex, selected);
-        update();
+        updateView();
     }
     private Button createButton(String buttonId, Composite buttonContainer, Listener listener, boolean isTop) {
         Button button= new Button(buttonContainer, SWT.PUSH);
@@ -319,5 +322,14 @@ public class NamingRulesPreference {
         GridData gd= new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
         gd.widthHint= Math.max(widthHint, button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
         return gd;
+    }
+    
+    public void store() {
+    	namingRules.set(namingRulesValue);
+    }
+    
+    public void loadDefault() {
+        this.namingRulesValue = namingRules.getDefault();
+        updateView();
     }
 }

@@ -70,6 +70,10 @@ public class NewS2JUnit4TestCaseCreationWizard extends JUnitWizard {
 
 	private NewS2JUnit4TestCaseWizardPageOne fPage1;
 	private NewTestCaseWizardPageTwo fPage2;
+	
+	public NewS2JUnit4TestCaseWizardPageOne getNewS2JUnit4TestCaseWizardPageOne() {
+		return fPage1;
+	}
 
 	public NewS2JUnit4TestCaseCreationWizard() {
 		super();

@@ -235,7 +235,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 							if (cf.isStructureKnown())
 								classToTest= cf.getType();
 						} catch(JavaModelException e) {
-							JUnitPlugin.log(e);
+							Logger.error(e, this);
 						}
 					}					
 				}
@@ -246,7 +246,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 						setClassUnderTest(classToTest.getFullyQualifiedName('.'));
 					}
 				} catch (JavaModelException e) {
-					JUnitPlugin.log(e);
+					Logger.error(e, this);
 				}
 			}
 		}
@@ -708,7 +708,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 					return (IType) resultArray[0];
 			}
 		} catch (JavaModelException e) {
-			JUnitPlugin.log(e);
+			Logger.error(e, this);
 		}
 		return null;
 	}
@@ -1238,7 +1238,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 					return status;
 				}
 			} catch (JavaModelException e) {
-				JUnitPlugin.log(e);
+				Logger.error(e, this);
 			}
 		}
 		return status;

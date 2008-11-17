@@ -81,6 +81,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.SelectionDialog;
 import org.seasar.s2junit4plugin.Logger;
+import org.seasar.s2junit4plugin.util.PreferenceStoreUtil;
 import org.seasar.s2junit4plugin.util.StringUtil;
 import org.seasar.s2junit4plugin.wizard.S2JUnit4StubUtility.GenStubSettings;
 
@@ -201,8 +202,9 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		IJavaElement element= getInitialJavaElement(selection);
 
 		try {
+			String mainTestPath = PreferenceStoreUtil.getPreferenceStoreOfWorkspace().getString("MainTestPath");
 			IJavaProject javaProject = element.getJavaProject();
-			IFolder folder = javaProject.getProject().getFolder("src/test/java");// TODO ここはプリファレンスからとってくる
+			IFolder folder = javaProject.getProject().getFolder(mainTestPath);
 			if(folder.exists()) {
 				IPackageFragmentRoot findPackageFragmentRoot = javaProject.findPackageFragmentRoot(folder.getFullPath());
 				setPackageFragmentRoot(findPackageFragmentRoot, true);

@@ -39,7 +39,6 @@ import org.seasar.s2junit4plugin.action.NamingRule;
 
 
 public class NamingRulesPreference {
-    private QuickJUnitPreferencePage preferencePage;
     private Shell shell;
     private List namingRulesValue;
 
@@ -48,12 +47,14 @@ public class NamingRulesPreference {
     private Button editButton;
     private Button moveUpButton;
     private Button moveDownButton;
+    private int widthHint;
 
-    public NamingRulesPreference(QuickJUnitPreferencePage preferencePage) {
-        this.preferencePage = preferencePage;
+    public NamingRulesPreference(List namingRulesValue, Composite parent, int widthHint) {
+    	this.widthHint = widthHint;
+    	create(namingRulesValue, parent);
     }
 
-    public void create(List namingRulesValue, Composite parent) {
+    private void create(List namingRulesValue, Composite parent) {
         this.namingRulesValue = namingRulesValue;
         shell = parent.getShell();
         Composite container= new Composite(parent, SWT.NONE);
@@ -308,9 +309,15 @@ public class NamingRulesPreference {
         if (isTop)
             gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
         else
-            gd = preferencePage.getButtonGridData(button);
+            gd = getButtonGridData(button);
         button.setLayoutData(gd);
         button.addListener(SWT.Selection, listener);
         return button;
+    }
+    
+    private GridData getButtonGridData(Button button) {
+        GridData gd= new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
+        gd.widthHint= Math.max(widthHint, button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
+        return gd;
     }
 }

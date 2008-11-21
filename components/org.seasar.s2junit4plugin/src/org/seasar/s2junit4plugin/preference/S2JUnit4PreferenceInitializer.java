@@ -11,6 +11,7 @@ public class S2JUnit4PreferenceInitializer extends
 	public void initializeDefaultPreferences() {
 		IPreferenceStore preferenceStoreOfWorkspace = PreferenceStoreUtil.getPreferenceStoreOfWorkspace();
 		preferenceStoreOfWorkspace.setDefault("MainTestPath", "src/test/java");
+		preferenceStoreOfWorkspace.setDefault("TestResourcesPath", "src/test/resources");
 	}
 
 }

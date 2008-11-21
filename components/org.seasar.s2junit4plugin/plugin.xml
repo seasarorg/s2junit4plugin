@@ -3,39 +3,6 @@
 <plugin>
    <extension
          point="org.eclipse.ui.popupMenus">
-      <viewerContribution
-            id="org.seasar.s2junit4plugin.viewerContribution"
-            targetID="#CompilationUnitEditorContext">
-         <menu
-               id="org.seasar.s2junit4plugin.viewerContribution.menu"
-               label="S2JUnit4"
-               path="additions">
-            <separator
-                  name="additions">
-            </separator>
-         </menu>
-         <action
-               class="org.seasar.s2junit4plugin.action.JUnitDebugAction"
-               definitionId="org.seasar.s2junit4plugin.command.JUnitDebugAction"
-               id="org.seasar.s2junit4plugin.action.JUnitDebugAction"
-               label="%JUnitDebugAction.label"
-               menubarPath="org.seasar.s2junit4plugin.viewerContribution.menu/additions">
-         </action>
-         <action
-               class="org.seasar.s2junit4plugin.action.JUnitRunAction"
-               definitionId="org.seasar.s2junit4plugin.command.JUnitRunAction"
-               id="org.seasar.s2junit4plugin.action.JUnitRunAction"
-               label="%JUnitRunAction.label"
-               menubarPath="org.seasar.s2junit4plugin.viewerContribution.menu/additions">
-         </action>
-         <action
-               class="org.seasar.s2junit4plugin.action.OpenTestingPairAction"
-               definitionId="org.seasar.s2junit4plugin.command.OpenTestingPairAction"
-               id="org.seasar.s2junit4plugin.action.OpenTestingPairAction"
-               label="%OpenTestingPairAction.label"
-               menubarPath="org.seasar.s2junit4plugin.viewerContribution.menu/additions">
-         </action>
-      </viewerContribution>
       <objectContribution
             adaptable="true"
             id="org.seasar.s2junit4plugin.objectContribution"
@@ -47,6 +14,9 @@
             <separator
                   name="additions">
             </separator>
+            <groupMarker
+                  name="additions2">
+            </groupMarker>
          </menu>
          <action
                class="org.seasar.s2junit4plugin.action.JUnitDebugAction"
@@ -79,7 +49,49 @@
                </or>
                </enablement>
          </action>
+                  <action
+               class="org.seasar.s2junit4plugin.action.OpenDiconPairAction"
+               definitionId="org.seasar.s2junit4plugin.command.openDiconPair"
+               icon="icons/skip.gif"
+               id="org.seasar.s2junit4plugin.action.openDiconPair"
+               label="Open TestCase Dicon Pair"
+               menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions">
+         </action>
       </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="org.seasar.s2junit4plugin.objectContribution.diconFile"
+            nameFilter="*.dicon"
+            objectClass="org.eclipse.core.resources.IFile">
+         <action
+               class="org.seasar.s2junit4plugin.action.OpenClassPairAction"
+               definitionId="org.seasar.s2junit4plugin.command.openDiconPair"
+               icon="icons/skip.gif"
+               id="org.seasar.s2junit4plugin.action.openClassPair"
+               label="Open TestCase Class Pair"
+               menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions">
+         </action>
+      </objectContribution>
+      <viewerContribution
+            id="org.seasar.s2junit4plugin.viewerContribution.diconFile"
+            targetID="#DiconEditorContext">
+         <action
+               class="org.seasar.s2junit4plugin.action.OpenClassPairAction"
+               definitionId="org.seasar.s2junit4plugin.command.openClassPair"
+               icon="icons/skip.gif"
+               id="org.seasar.s2junit4plugin.action.openClassPair"
+               label="Open TestCase Class Pair"
+               menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions2">
+         </action>
+         <menu
+               id="org.seasar.s2junit4plugin.viewerContribution.menu"
+               label="S2JUnit4"
+               path="additions">
+            <separator
+                  name="additions">
+            </separator>
+         </menu>
+      </viewerContribution>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -100,6 +112,18 @@
             contextId="org.eclipse.jdt.ui.javaEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+0">
+      </key>
+      <key
+            commandId="org.seasar.s2junit4plugin.command.openClassPair"
+            contextId="org.eclipse.ui.textEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+9">
+      </key>
+      <key
+            commandId="org.seasar.s2junit4plugin.command.openDiconPair"
+            contextId="org.eclipse.jdt.ui.javaEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+9">
       </key>
    </extension>
    <extension
@@ -126,6 +150,16 @@
             description="%JUnitDebugAction.description"
             id="org.seasar.s2junit4plugin.command.JUnitDebugAction"
             name="%JUnitDebugAction.label">
+      </command>
+      <command
+            categoryId="org.seasar.s2junit4plugin.category"
+            id="org.seasar.s2junit4plugin.command.openDiconPair"
+            name="Open TestCase Dicon Pair">
+      </command>
+      <command
+            categoryId="org.seasar.s2junit4plugin.category"
+            id="org.seasar.s2junit4plugin.command.openClassPair"
+            name="Open TestCase Class Pair">
       </command>
    </extension>
    <extension
@@ -163,13 +197,32 @@
                label="%OpenTestingPairAction.label"
                menubarPath="Edit/org.seasar.s2junit4plugin.editorContribution.menu/additions">
          </action>
+         <action
+               class="org.seasar.s2junit4plugin.action.OpenDiconPairAction"
+               definitionId="org.seasar.s2junit4plugin.command.openDiconPair"
+               icon="icons/skip.gif"
+               id="org.seasar.s2junit4plugin.action.openDiconPair"
+               label="Open TestCase Dicon Pair"
+               menubarPath="Edit/org.seasar.s2junit4plugin.editorContribution.menu/additions">
+         </action>
 
+      </editorContribution>
+      <editorContribution
+            id="org.seasar.s2junit4plugin.editorContribution.diconEditor"
+            targetID="org.seasar.kijimuna.ui.editor.dicon">
+         <action
+               class="org.seasar.s2junit4plugin.action.OpenClassPairAction"
+               definitionId="org.seasar.s2junit4plugin.command.openDiconPair"
+               icon="icons/skip.gif"
+               id="org.seasar.s2junit4plugin.action.openClassPair"
+               label="Open TestCase Class Pair"
+               menubarPath="Edit/org.seasar.s2junit4plugin.editorContribution.menu/additions">
+         </action>
       </editorContribution>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="org.eclipse.jdt.ui.preferences.JavaBasePreferencePage"
             class="org.seasar.s2junit4plugin.preference.QuickJUnitPreferencePage"
             id="org.seasar.s2junit4plugin.page.QuickJUnitPreferencePage"
             name="S2JUnit4">
@@ -188,6 +241,20 @@
       <initializer
             class="org.seasar.s2junit4plugin.preference.S2JUnit4PreferenceInitializer">
       </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="org.seasar.s2junit4plugin.actionSet.openClassPair"
+            label="Open TestCase Class Pair"
+            visible="true">
+         <action
+               class="org.seasar.s2junit4plugin.action.OpenClassPairAction"
+               definitionId="org.seasar.s2junit4plugin.command.openClassPair"
+               id="org.seasar.s2junit4plugin.action.openClassPair"
+               label="Open TestCase Class Pair">
+         </action>
+      </actionSet>
    </extension>
 
 </plugin>

@@ -13,6 +13,7 @@ public class DefaultFolderPreference extends Composite{
 	
 	private IPreferenceStore store;
 	private Text mainTestPath;
+	private Text testResourcesPath;
 	
 	public DefaultFolderPreference(IPreferenceStore store, Composite parent) {
 		super(parent, SWT.NONE);
@@ -26,15 +27,22 @@ public class DefaultFolderPreference extends Composite{
 		mainTestPath = new Text(this, SWT.BORDER);
 		mainTestPath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		mainTestPath.setText(store.getString("MainTestPath"));
+		Label testResourcesPathLabel = new Label(this, SWT.NULL);
+		testResourcesPathLabel.setText("テストリソースフォルダ");
+		testResourcesPath = new Text(this, SWT.BORDER);
+		testResourcesPath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		testResourcesPath.setText(store.getString("TestResourcesPath"));
 	}
 	
 
     public void store() {
     	store.setValue("MainTestPath", mainTestPath.getText());
+    	store.setValue("TestResourcesPath", testResourcesPath.getText());
     }
     
     public void loadDefault() {
     	mainTestPath.setText("src/test/java");
+    	testResourcesPath.setText("src/test/resources");
     }
 
 }

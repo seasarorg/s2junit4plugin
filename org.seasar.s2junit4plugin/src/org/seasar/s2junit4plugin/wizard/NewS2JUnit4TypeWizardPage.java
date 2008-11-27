@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,15 +19,58 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.text.edits.TextEdit;
+
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.resources.IResource;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+
+import org.eclipse.core.resources.IResource;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.accessibility.AccessibleAdapter;
+import org.eclipse.swt.accessibility.AccessibleEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Text;
+
+import org.eclipse.jface.contentassist.SubjectControlContentAssistant;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
+
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.templates.Template;
+import org.eclipse.jface.text.templates.TemplateException;
+
+import org.eclipse.ui.contentassist.ContentAssistHandler;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.eclipse.ui.dialogs.PreferencesUtil;
+
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -62,6 +105,7 @@ import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.core.search.IJavaSearchScope;
 import org.eclipse.jdt.core.search.SearchEngine;
+
 import org.eclipse.jdt.internal.corext.codemanipulation.AddUnimplementedConstructorsOperation;
 import org.eclipse.jdt.internal.corext.codemanipulation.AddUnimplementedMethodsOperation;
 import org.eclipse.jdt.internal.corext.codemanipulation.CodeGenerationSettings;
@@ -72,11 +116,16 @@ import org.eclipse.jdt.internal.corext.refactoring.StubTypeContext;
 import org.eclipse.jdt.internal.corext.refactoring.TypeContextChecker;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jdt.internal.corext.util.CodeFormatterUtil;
-import org.eclipse.jdt.internal.corext.util.JavaConventionsUtil;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.internal.corext.util.Messages;
 import org.eclipse.jdt.internal.corext.util.Resources;
 import org.eclipse.jdt.internal.corext.util.Strings;
+
+import org.eclipse.jdt.ui.CodeGeneration;
+import org.eclipse.jdt.ui.CodeStyleConfiguration;
+import org.eclipse.jdt.ui.JavaElementLabelProvider;
+import org.eclipse.jdt.ui.wizards.NewContainerWizardPage;
+
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.internal.ui.dialogs.FilteredTypesSelectionDialog;
@@ -90,7 +139,6 @@ import org.eclipse.jdt.internal.ui.refactoring.contentassist.ControlContentAssis
 import org.eclipse.jdt.internal.ui.refactoring.contentassist.JavaPackageCompletionProcessor;
 import org.eclipse.jdt.internal.ui.refactoring.contentassist.JavaTypeCompletionProcessor;
 import org.eclipse.jdt.internal.ui.util.SWTUtil;
-import org.eclipse.jdt.internal.ui.viewsupport.BasicElementLabels;
 import org.eclipse.jdt.internal.ui.wizards.NewWizardMessages;
 import org.eclipse.jdt.internal.ui.wizards.SuperInterfaceSelectionDialog;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
@@ -105,45 +153,6 @@ import org.eclipse.jdt.internal.ui.wizards.dialogfields.Separator;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.StringButtonDialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.StringButtonStatusDialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.StringDialogField;
-import org.eclipse.jdt.ui.CodeGeneration;
-import org.eclipse.jdt.ui.CodeStyleConfiguration;
-import org.eclipse.jdt.ui.JavaElementLabelProvider;
-import org.eclipse.jdt.ui.wizards.NewClassWizardPage;
-import org.eclipse.jdt.ui.wizards.NewContainerWizardPage;
-import org.eclipse.jdt.ui.wizards.NewInterfaceWizardPage;
-import org.eclipse.jface.contentassist.SubjectControlContentAssistant;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.preference.PreferenceDialog;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.text.templates.Template;
-import org.eclipse.jface.text.templates.TemplateException;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.text.edits.TextEdit;
-import org.eclipse.ui.contentassist.ContentAssistHandler;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.ui.dialogs.PreferencesUtil;
 
 /**
  * The class <code>NewTypeWizardPage</code> contains controls and validation routines 
@@ -173,7 +182,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 
 		private ImportRewrite fImportsRewrite;
 				
-		/* package */ ImportsManager(CompilationUnit astRoot) {
+		/* package */ ImportsManager(CompilationUnit astRoot) throws CoreException {
 			fImportsRewrite= CodeStyleConfiguration.createImportRewrite(astRoot, true);
 		}
 
@@ -273,13 +282,13 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 	protected final static String MODIFIERS= PAGE_NAME + ".modifiers"; //$NON-NLS-1$
 	/** Field ID of the method stubs check boxes. */
 	protected final static String METHODS= PAGE_NAME + ".methods"; //$NON-NLS-1$
-
+	
 	protected boolean fIsS2Junit4;
 	
 	public boolean isS2JUnit4() {
 		return fIsS2Junit4;
 	}
-	
+
 	private static class InterfaceWrapper {
 		public String interfaceName;
 
@@ -304,7 +313,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 		}
 		
 		public String getText(Object element) {
-			return BasicElementLabels.getJavaElementName(((InterfaceWrapper) element).interfaceName);
+			return ((InterfaceWrapper) element).interfaceName;
 		}
 		
 		public Image getImage(Object element) {
@@ -540,7 +549,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 				if (elem.getElementType() == IJavaElement.TYPE) {
 					type= (IType)elem;
 					if (type.exists()) {
-						String superName= SuperInterfaceSelectionDialog.getNameWithTypeParameters(type);
+						String superName= JavaModelUtil.getFullyQualifiedName(type);
 						if (type.isInterface()) {
 							initSuperinterfaces.add(superName);
 						} else {
@@ -575,21 +584,22 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 		setAddComments(StubUtility.doAddComments(project), true); // from project or workspace
 	}
 	
-
-	
-	
 	private static IStatus validateJavaTypeName(String text, IJavaProject project) {
 		if (project == null || !project.exists()) {
 			return JavaConventions.validateJavaTypeName(text, JavaCore.VERSION_1_3, JavaCore.VERSION_1_3);
 		}
-		return JavaConventionsUtil.validateJavaTypeName(text, project);
+		String sourceLevel= project.getOption(JavaCore.COMPILER_SOURCE, true);
+		String compliance= project.getOption(JavaCore.COMPILER_COMPLIANCE, true);
+		return JavaConventions.validateJavaTypeName(text, sourceLevel, compliance);
 	}
 	
 	private static IStatus validatePackageName(String text, IJavaProject project) {
 		if (project == null || !project.exists()) {
 			return JavaConventions.validatePackageName(text, JavaCore.VERSION_1_3, JavaCore.VERSION_1_3);
 		}
-		return JavaConventionsUtil.validatePackageName(text, project);
+		String sourceLevel= project.getOption(JavaCore.COMPILER_SOURCE, true);
+		String compliance= project.getOption(JavaCore.COMPILER_COMPLIANCE, true);
+		return JavaConventions.validatePackageName(text, sourceLevel, compliance);
 	}
 	
 	// -------- UI Creation ---------
@@ -700,8 +710,11 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 		fEnclosingTypeSelection.doFillIntoGrid(tabGroup, 1);
 
 		Text text= fEnclosingTypeDialogField.getTextControl(composite);
-		SWTUtil.setAccessibilityText(text, NewWizardMessages.NewTypeWizardPage_enclosing_field_description);
-
+		text.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			public void getName(AccessibleEvent e) {
+				e.result= NewWizardMessages.NewTypeWizardPage_enclosing_field_description;
+			}
+		});
 		GridData gd= new GridData(GridData.FILL_HORIZONTAL);
 		gd.widthHint= getMaxFieldWidth();
 		gd.horizontalSpan= 2;
@@ -880,11 +893,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 	 * Sets the focus on the type name input field.
 	 */		
 	protected void setFocus() {
-		if (fTypeNameDialogField.isEnabled()) {
-			fTypeNameDialogField.setFocus();
-		} else {
-			setFocusOnContainer();
-		}
+		fTypeNameDialogField.setFocus();
 	}
 				
 	// -------- TypeFieldsAdapter --------
@@ -913,15 +922,15 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 
 
 		public void widgetSelected(SelectionEvent e) {
-			typePageLinkActivated();
+			typePageLinkActivated(e);
 		}
 
 		public void widgetDefaultSelected(SelectionEvent e) {
-			typePageLinkActivated();
+			typePageLinkActivated(e);
 		}
 	}
 	
-	private void typePageLinkActivated() {
+	private void typePageLinkActivated(SelectionEvent e) {
 		IJavaProject project= getJavaProject();
 		if (project != null) {
 			PreferenceDialog dialog= PreferencesUtil.createPropertyDialogOn(getShell(), project.getProject(), CodeTemplatePreferencePage.PROP_ID, null, null);
@@ -942,18 +951,18 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 		} else if (field == fEnclosingTypeDialogField) {
 			IType type= chooseEnclosingType();
 			if (type != null) {
-				fEnclosingTypeDialogField.setText(type.getFullyQualifiedName('.'));
+				fEnclosingTypeDialogField.setText(JavaModelUtil.getFullyQualifiedName(type));
 			}
 		} else if (field == fSuperClassDialogField) {
 			IType type= chooseSuperClass();
 			if (type != null) {
-				fSuperClassDialogField.setText(SuperInterfaceSelectionDialog.getNameWithTypeParameters(type));
+				fSuperClassDialogField.setText(JavaModelUtil.getFullyQualifiedName(type));
 			}
 		}
 	}
 	
 	private void typePageCustomButtonPressed(DialogField field, int index) {		
-		if (field == fSuperInterfacesDialogField && index == 0) {
+		if (field == fSuperInterfacesDialogField) {
 			chooseSuperInterfaces();
 			List interfaces= fSuperInterfacesDialogField.getElements();
 			if (!interfaces.isEmpty()) {
@@ -1112,7 +1121,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 	public void setEnclosingType(IType type, boolean canBeModified) {
 		fCurrEnclosingType= type;
 		fCanModifyEnclosingType= canBeModified;
-		String str= (type == null) ? "" : type.getFullyQualifiedName('.'); //$NON-NLS-1$
+		String str= (type == null) ? "" : JavaModelUtil.getFullyQualifiedName(type); //$NON-NLS-1$
 		fEnclosingTypeDialogField.setText(str);
 		updateEnableState();
 	}
@@ -1360,7 +1369,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 		if ((fTypeKind == ANNOTATION_TYPE || fTypeKind == ENUM_TYPE) && !status.matches(IStatus.ERROR)) {
 	    	if (root != null && !JavaModelUtil.is50OrHigher(root.getJavaProject())) {
 	    		// error as createType will fail otherwise (bug 96928)
-				return new StatusInfo(IStatus.ERROR, Messages.format(NewWizardMessages.NewTypeWizardPage_warning_NotJDKCompliant, BasicElementLabels.getJavaElementName(root.getJavaProject().getElementName())));  
+				return new StatusInfo(IStatus.ERROR, Messages.format(NewWizardMessages.NewTypeWizardPage_warning_NotJDKCompliant, root.getJavaProject().getElementName()));  
 	    	}
 	    	if (fTypeKind == ENUM_TYPE) {
 		    	try {
@@ -1609,7 +1618,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 					} catch (CoreException e) {
 						status.setError(Messages.format(
 							NewWizardMessages.NewTypeWizardPage_error_uri_location_unkown, 
-							BasicElementLabels.getURLPart(Resources.getLocationString(resource))));
+							Resources.getLocationString(resource)));
 					}
 				}
 			}
@@ -1716,11 +1725,11 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 				String intfname= ((InterfaceWrapper) elements.get(i)).interfaceName;
 				Type type= TypeContextChecker.parseSuperInterface(intfname);
 				if (type == null) {
-					status.setError(Messages.format(NewWizardMessages.NewTypeWizardPage_error_InvalidSuperInterfaceName, BasicElementLabels.getJavaElementName(intfname))); 
+					status.setError(Messages.format(NewWizardMessages.NewTypeWizardPage_error_InvalidSuperInterfaceName, intfname)); 
 					return status;
 				}
 				if (type instanceof ParameterizedType && ! JavaModelUtil.is50OrHigher(root.getJavaProject())) {
-					status.setError(Messages.format(NewWizardMessages.NewTypeWizardPage_error_SuperInterfaceNotParameterized, BasicElementLabels.getJavaElementName(intfname))); 
+					status.setError(Messages.format(NewWizardMessages.NewTypeWizardPage_error_SuperInterfaceNotParameterized, intfname)); 
 					return status;
 				}
 			}				
@@ -1964,6 +1973,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 				imports= new ImportsManager(astRoot);
 				// add an import that will be removed again. Having this import solves 14661
 				imports.addImport(JavaModelUtil.concatenateName(pack.getElementName(), typeName));
+				
 				String typeContent = null;
 				if(isS2JUnit4()) {
 					imports.addImport("org.junit.runner.RunWith");
@@ -2069,7 +2079,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 			IBuffer buf= cu.getBuffer();
 			String originalContent= buf.getText(range.getOffset(), range.getLength());
 			
-			String formattedContent= CodeFormatterUtil.format(CodeFormatter.K_CLASS_BODY_DECLARATIONS, originalContent, indent, lineDelimiter, pack.getJavaProject());
+			String formattedContent= CodeFormatterUtil.format(CodeFormatter.K_CLASS_BODY_DECLARATIONS, originalContent, indent, null, lineDelimiter, pack.getJavaProject());
 			formattedContent= Strings.trimLeadingTabsAndSpaces(formattedContent);
 			buf.replace(range.getOffset(), range.getLength(), formattedContent);
 			if (!isInnerClass) {
@@ -2404,7 +2414,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 			try {
 				StringBuffer typeName= new StringBuffer();
 				if (isEnclosingTypeSelected()) {
-					typeName.append(getEnclosingType().getTypeQualifiedName('.')).append('.');
+					typeName.append(JavaModelUtil.getTypeQualifiedName(getEnclosingType())).append('.');
 				}
 				typeName.append(getTypeNameWithoutParameters());
 				String[] typeParamNames= new String[0];

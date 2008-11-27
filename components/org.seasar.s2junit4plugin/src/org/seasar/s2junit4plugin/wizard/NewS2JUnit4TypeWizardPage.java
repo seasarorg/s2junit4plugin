@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.text.edits.TextEdit;
@@ -24,6 +25,7 @@ import org.eclipse.text.edits.TextEdit;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -63,6 +65,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateException;
@@ -549,7 +552,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 				if (elem.getElementType() == IJavaElement.TYPE) {
 					type= (IType)elem;
 					if (type.exists()) {
-						String superName= JavaModelUtil.getFullyQualifiedName(type);
+						String superName= S2JUnit4SuperInterfaceSelectionDialog.getNameWithTypeParameters(type);
 						if (type.isInterface()) {
 							initSuperinterfaces.add(superName);
 						} else {
@@ -951,12 +954,12 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 		} else if (field == fEnclosingTypeDialogField) {
 			IType type= chooseEnclosingType();
 			if (type != null) {
-				fEnclosingTypeDialogField.setText(JavaModelUtil.getFullyQualifiedName(type));
+				fEnclosingTypeDialogField.setText(S2JUnit4SuperInterfaceSelectionDialog.getNameWithTypeParameters(type));
 			}
 		} else if (field == fSuperClassDialogField) {
 			IType type= chooseSuperClass();
 			if (type != null) {
-				fSuperClassDialogField.setText(JavaModelUtil.getFullyQualifiedName(type));
+				fSuperClassDialogField.setText(S2JUnit4SuperInterfaceSelectionDialog.getNameWithTypeParameters(type));
 			}
 		}
 	}
@@ -1121,7 +1124,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 	public void setEnclosingType(IType type, boolean canBeModified) {
 		fCurrEnclosingType= type;
 		fCanModifyEnclosingType= canBeModified;
-		String str= (type == null) ? "" : JavaModelUtil.getFullyQualifiedName(type); //$NON-NLS-1$
+		String str= (type == null) ? "" : type.getFullyQualifiedName('.'); //$NON-NLS-1$
 		fEnclosingTypeDialogField.setText(str);
 		updateEnableState();
 	}
@@ -2078,8 +2081,21 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 			
 			IBuffer buf= cu.getBuffer();
 			String originalContent= buf.getText(range.getOffset(), range.getLength());
-			
-			String formattedContent= CodeFormatterUtil.format(CodeFormatter.K_CLASS_BODY_DECLARATIONS, originalContent, indent, null, lineDelimiter, pack.getJavaProject());
+			Map options= pack.getJavaProject() != null ? pack.getJavaProject().getOptions(true) : null;
+			String formattedContent= null;
+			TextEdit edit= CodeFormatterUtil.format2(CodeFormatter.K_CLASS_BODY_DECLARATIONS, originalContent, 0, originalContent.length(), indent, lineDelimiter, options);
+			if (edit == null) {
+				formattedContent= originalContent;
+			} else {
+				Document document= new Document(originalContent);
+				try {
+					edit.apply(document, TextEdit.NONE);
+				} catch (BadLocationException e) {
+					JavaPlugin.log(e); // bug in the formatter
+					Assert.isTrue(false, "Formatter created edits with wrong positions: " + e.getMessage()); //$NON-NLS-1$
+				}
+				formattedContent= document.get();
+			}
 			formattedContent= Strings.trimLeadingTabsAndSpaces(formattedContent);
 			buf.replace(range.getOffset(), range.getLength(), formattedContent);
 			if (!isInnerClass) {
@@ -2414,7 +2430,7 @@ public abstract class NewS2JUnit4TypeWizardPage extends NewContainerWizardPage {
 			try {
 				StringBuffer typeName= new StringBuffer();
 				if (isEnclosingTypeSelected()) {
-					typeName.append(JavaModelUtil.getTypeQualifiedName(getEnclosingType())).append('.');
+					typeName.append(getEnclosingType().getTypeQualifiedName('.')).append('.');
 				}
 				typeName.append(getTypeNameWithoutParameters());
 				String[] typeParamNames= new String[0];

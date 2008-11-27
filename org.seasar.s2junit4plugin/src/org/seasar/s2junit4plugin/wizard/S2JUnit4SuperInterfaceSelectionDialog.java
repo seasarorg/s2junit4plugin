@@ -28,6 +28,9 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.PlatformUI;
 
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeParameter;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.core.search.IJavaSearchScope;
 import org.eclipse.jdt.core.search.SearchEngine;
@@ -149,7 +152,7 @@ public class S2JUnit4SuperInterfaceSelectionDialog extends OpenTypeSelectionDial
 			if (obj instanceof TypeNameMatch) {
 				accessedHistoryItem(obj);
 				TypeNameMatch type= (TypeNameMatch) obj;
-				String qualifiedName= JavaModelUtil.getFullyQualifiedName(type.getType()); 
+				String qualifiedName= getNameWithTypeParameters(type.getType());
 				String message;
 
 				if (fTypeWizardPage.addSuperInterface(qualifiedName)) {
@@ -206,5 +209,31 @@ public class S2JUnit4SuperInterfaceSelectionDialog extends OpenTypeSelectionDial
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(newShell, IJavaHelpContextIds.SUPER_INTERFACE_SELECTION_DIALOG);
+	}
+	
+	public static String getNameWithTypeParameters(IType type) {
+		String superName= type.getFullyQualifiedName('.');
+		if (!JavaModelUtil.is50OrHigher(type.getJavaProject())) {
+			return superName;
+		}
+		try {
+			ITypeParameter[] typeParameters= type.getTypeParameters();
+			if (typeParameters.length > 0) {
+				StringBuffer buf= new StringBuffer(superName);
+				buf.append('<');
+				for (int k= 0; k < typeParameters.length; k++) {
+					if (k != 0) {
+						buf.append(',').append(' ');
+					}
+					buf.append(typeParameters[k].getElementName());
+				}
+				buf.append('>');
+				return buf.toString();
+			}
+		} catch (JavaModelException e) {
+			// ignore
+		}
+		return superName;
+		
 	}
 }

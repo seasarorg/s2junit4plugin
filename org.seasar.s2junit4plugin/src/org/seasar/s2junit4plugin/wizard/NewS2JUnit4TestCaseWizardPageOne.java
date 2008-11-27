@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Text;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
@@ -164,6 +165,8 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 	private boolean fIsS2Junit4Enabled;
 	private Link fLink;
 	private Label fImage;
+	
+	private IPreferenceStore store = PreferenceStoreUtil.getPreferenceStoreOfWorkspace();
 
 	/**
 	 * Creates a new <code>NewTestCaseCreationWizardPage</code>.
@@ -261,24 +264,30 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		restoreWidgetValues();
 		
 		boolean isJunit4= false;
-		if (element != null && element.getElementType() != IJavaElement.JAVA_MODEL) {
-			IJavaProject project= element.getJavaProject();
-			try {
-				isJunit4= project.findType(JUnitPlugin.JUNIT4_ANNOTATION_NAME) != null;
-			} catch (JavaModelException e) {
-				// ignore
-			}
+//		if (element != null && element.getElementType() != IJavaElement.JAVA_MODEL) {
+//			IJavaProject project= element.getJavaProject();
+//			try {
+//				isJunit4= project.findType(JUnitPlugin.JUNIT4_ANNOTATION_NAME) != null;
+//			} catch (JavaModelException e) {
+//				// ignore
+//			}
+//		}
+		if(store.getString(Constants.PREF_TEST_GENERATION_TYPE).equals(org.seasar.s2junit4plugin.Messages.getString("Preference.JUnit4"))) {
+			isJunit4=true;
 		}
 		setJUnit4(isJunit4, true);
 		
 		boolean isS2Junit4= false;
-		if (element != null && element.getElementType() != IJavaElement.JAVA_MODEL) {
-			IJavaProject project= element.getJavaProject();
-			try {
-				isS2Junit4= project.findType("org.seasar.framework.unit.Seasar2") != null;
-			} catch (JavaModelException e) {
-				// ignore
-			}
+//		if (element != null && element.getElementType() != IJavaElement.JAVA_MODEL) {
+//			IJavaProject project= element.getJavaProject();
+//			try {
+//				isS2Junit4= project.findType("org.seasar.framework.unit.Seasar2") != null;
+//			} catch (JavaModelException e) {
+//				// ignore
+//			}
+//		}
+		if(store.getString(Constants.PREF_TEST_GENERATION_TYPE).equals(org.seasar.s2junit4plugin.Messages.getString("Preference.S2JUnit4"))) {
+			isS2Junit4=true;
 		}
 		setS2JUnit4(isS2Junit4, true);
 		
@@ -525,8 +534,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 	 * @since 3.2
 	 */
 	protected void createJUnit4Controls(Composite composite, int nColumns) {
-		fIsJunit4=false;
-		fIsS2Junit4=true;
+
 		Composite inner= new Composite(composite, SWT.NONE);
 		inner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, nColumns, 1));
 		GridLayout layout= new GridLayout(4, false);
@@ -544,7 +552,10 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		Button junti3Toggle= new Button(inner, SWT.RADIO);
 		junti3Toggle.setText(WizardMessages.NewTestCaseWizardPageOne_junit3_radio_label);
 		junti3Toggle.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false, 1, 1));
-		junti3Toggle.setSelection(false);
+		if(store.getString(Constants.PREF_TEST_GENERATION_TYPE).equals(org.seasar.s2junit4plugin.Messages.getString("Preference.JUnit3"))) {
+			junti3Toggle.setSelection(true);
+			internalSetJUnit3(true);
+		}
 		junti3Toggle.setEnabled(fIsJunit4Enabled);
 		junti3Toggle.addSelectionListener(junit3Listener);
 		
@@ -557,7 +568,10 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		
 		fJUnit4Toggle= new Button(inner, SWT.RADIO);
 		fJUnit4Toggle.setText(WizardMessages.NewTestCaseWizardPageOne_junit4_radio_label);
-		fJUnit4Toggle.setSelection(false);
+		if(store.getString(Constants.PREF_TEST_GENERATION_TYPE).equals(org.seasar.s2junit4plugin.Messages.getString("Preference.JUnit4"))) {
+			fJUnit4Toggle.setSelection(true);
+			internalSetJUnit4(true);
+		}
 		fJUnit4Toggle.setEnabled(fIsJunit4Enabled);
 		fJUnit4Toggle.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false, 1, 1));
 		fJUnit4Toggle.addSelectionListener(junit4Listener);
@@ -571,9 +585,12 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		
 		
 		Button s2unitToggle= new Button(inner, SWT.RADIO);
-		s2unitToggle.setText("New S2Unit");
+		s2unitToggle.setText("New S2Unit test");
 		s2unitToggle.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false, 1, 1));
-		s2unitToggle.setSelection(false);
+		if(store.getString(Constants.PREF_TEST_GENERATION_TYPE).equals(org.seasar.s2junit4plugin.Messages.getString("Preference.S2Unit"))) {
+			s2unitToggle.setSelection(true);
+			internalSetS2Unit(true);
+		}
 		s2unitToggle.setEnabled(fIsS2Junit4Enabled);
 		s2unitToggle.addSelectionListener(s2UnitListener);
 		
@@ -585,8 +602,11 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		};
 		
 		fS2JUnit4Toggle= new Button(inner, SWT.RADIO);
-		fS2JUnit4Toggle.setText("New S2JUnit4");
-		fS2JUnit4Toggle.setSelection(true);
+		fS2JUnit4Toggle.setText("New S2JUnit4 test");
+		if(store.getString(Constants.PREF_TEST_GENERATION_TYPE).equals(org.seasar.s2junit4plugin.Messages.getString("Preference.S2JUnit4"))) {
+			fS2JUnit4Toggle.setSelection(true);
+			internalSetS2JUnit4(true);
+		}
 		fS2JUnit4Toggle.setEnabled(fIsS2Junit4Enabled);
 		fS2JUnit4Toggle.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false, 1, 1));
 		fS2JUnit4Toggle.addSelectionListener(s2JUnit4Listener);

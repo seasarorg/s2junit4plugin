@@ -13,6 +13,7 @@ public class S2JUnit4PreferenceInitializer extends
 		IPreferenceStore preferenceStoreOfWorkspace = PreferenceStoreUtil.getPreferenceStoreOfWorkspace();
 		preferenceStoreOfWorkspace.setDefault(Constants.PREF_TEST_JAVA_PATH, Constants.PREF_DEFAULT_TEST_JAVA_PATH);
 		preferenceStoreOfWorkspace.setDefault(Constants.PREF_TEST_RESOURCES_PATH, Constants.PREF_DEFAULT_TEST_RESOURCES_PATH);
+		preferenceStoreOfWorkspace.setDefault(Constants.PREF_TEST_GENERATION_TYPE, Constants.PREF_DEFAULT_TEST_GENERATION_TYPE);
 	}
 
 }

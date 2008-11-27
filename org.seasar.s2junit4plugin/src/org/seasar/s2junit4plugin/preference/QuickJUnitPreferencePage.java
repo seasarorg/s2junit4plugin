@@ -33,18 +33,21 @@ public class QuickJUnitPreferencePage extends PreferencePage implements IWorkben
         NamingRules namingRules = new NamingRules(store);
 		TabFolder tabFolder = new TabFolder(parent, SWT.NULL);
 		tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+		
 		TabItem item1 = new TabItem(tabFolder, SWT.NULL);
-		item1.setText(Messages.getString("Preference.tabItem.namingRule")); //$NON-NLS-1$
+		item1.setText(Messages.getString("Preference.tabItem.defaultFolder")); //$NON-NLS-1$
+		
+		defaultFolderPreference = new DefaultFolderPreference(store, tabFolder);
+		item1.setControl(defaultFolderPreference);
+		
+		TabItem item2 = new TabItem(tabFolder, SWT.NULL);
+		item2.setText(Messages.getString("Preference.tabItem.namingRule")); //$NON-NLS-1$
         int widthHint= convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
         namingRulesPreference = new NamingRulesPreference(store, tabFolder, widthHint);
         Dialog.applyDialogFont(namingRulesPreference);
-        item1.setControl(namingRulesPreference);
+        item2.setControl(namingRulesPreference);
         
-		TabItem item2 = new TabItem(tabFolder, SWT.NULL);
-		item2.setText(Messages.getString("Preference.tabItem.defaultFolder")); //$NON-NLS-1$
-		
-		defaultFolderPreference = new DefaultFolderPreference(store, tabFolder);
-		item2.setControl(defaultFolderPreference);
+
         return parent;
 	}
 

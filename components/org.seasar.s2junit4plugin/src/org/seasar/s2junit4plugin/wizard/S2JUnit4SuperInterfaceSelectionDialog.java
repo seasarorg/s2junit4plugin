@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,31 +15,34 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.ITypeParameter;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.search.IJavaSearchConstants;
-import org.eclipse.jdt.core.search.IJavaSearchScope;
-import org.eclipse.jdt.core.search.SearchEngine;
-import org.eclipse.jdt.core.search.TypeNameMatch;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
-import org.eclipse.jdt.internal.corext.util.Messages;
-import org.eclipse.jdt.internal.ui.IJavaHelpContextIds;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
-import org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog;
-import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
-import org.eclipse.jdt.internal.ui.viewsupport.BasicElementLabels;
-import org.eclipse.jdt.internal.ui.wizards.NewWizardMessages;
-import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
+
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
+
 import org.eclipse.ui.PlatformUI;
+
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.search.IJavaSearchConstants;
+import org.eclipse.jdt.core.search.IJavaSearchScope;
+import org.eclipse.jdt.core.search.SearchEngine;
+import org.eclipse.jdt.core.search.TypeNameMatch;
+
+import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
+import org.eclipse.jdt.internal.corext.util.Messages;
+
+import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
+
+import org.eclipse.jdt.internal.ui.IJavaHelpContextIds;
+import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog;
+import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
+import org.eclipse.jdt.internal.ui.wizards.NewWizardMessages;
 
 /**
  * A type selection dialog providing means to open interface(s).
@@ -146,13 +149,13 @@ public class S2JUnit4SuperInterfaceSelectionDialog extends OpenTypeSelectionDial
 			if (obj instanceof TypeNameMatch) {
 				accessedHistoryItem(obj);
 				TypeNameMatch type= (TypeNameMatch) obj;
-				String qualifiedName= getNameWithTypeParameters(type.getType());
+				String qualifiedName= JavaModelUtil.getFullyQualifiedName(type.getType()); 
 				String message;
 
 				if (fTypeWizardPage.addSuperInterface(qualifiedName)) {
-					message= Messages.format(NewWizardMessages.SuperInterfaceSelectionDialog_interfaceadded_info, BasicElementLabels.getJavaElementName(qualifiedName));
+					message= Messages.format(NewWizardMessages.SuperInterfaceSelectionDialog_interfaceadded_info, qualifiedName);
 				} else {
-					message= Messages.format(NewWizardMessages.SuperInterfaceSelectionDialog_interfacealreadyadded_info, BasicElementLabels.getJavaElementName(qualifiedName));
+					message= Messages.format(NewWizardMessages.SuperInterfaceSelectionDialog_interfacealreadyadded_info, qualifiedName);
 				}
 				updateStatus(new StatusInfo(IStatus.INFO, message));
 			}
@@ -204,31 +207,4 @@ public class S2JUnit4SuperInterfaceSelectionDialog extends OpenTypeSelectionDial
 		super.configureShell(newShell);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(newShell, IJavaHelpContextIds.SUPER_INTERFACE_SELECTION_DIALOG);
 	}
-	
-	public static String getNameWithTypeParameters(IType type) {
-		String superName= type.getFullyQualifiedName('.');
-		if (!JavaModelUtil.is50OrHigher(type.getJavaProject())) {
-			return superName;
-		}
-		try {
-			ITypeParameter[] typeParameters= type.getTypeParameters();
-			if (typeParameters.length > 0) {
-				StringBuffer buf= new StringBuffer(superName);
-				buf.append('<');
-				for (int k= 0; k < typeParameters.length; k++) {
-					if (k != 0) {
-						buf.append(',').append(' ');
-					}
-					buf.append(typeParameters[k].getElementName());
-				}
-				buf.append('>');
-				return buf.toString();
-			}
-		} catch (JavaModelException e) {
-			// ignore
-		}
-		return superName;
-		
-	}
-	
 }

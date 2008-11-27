@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,14 @@
 
 package org.seasar.s2junit4plugin.wizard;
 
+import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.TextEdit;
+
 import org.eclipse.core.runtime.CoreException;
+
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
+
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -31,15 +38,12 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.core.formatter.IndentManipulation;
+
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
+
 import org.eclipse.jdt.ui.CodeGeneration;
 import org.eclipse.jdt.ui.PreferenceConstants;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.Document;
-import org.eclipse.text.edits.MalformedTreeException;
-import org.eclipse.text.edits.TextEdit;
 import org.seasar.s2junit4plugin.wizard.NewS2JUnit4TypeWizardPage.ImportsManager;
-
 
 /**
  * Utility methods for code generation.
@@ -91,14 +95,12 @@ public class S2JUnit4StubUtility {
 	/**
 	 * Generates a stub. Given a template method, a stub with the same signature
 	 * will be constructed so it can be added to a type.
-	 * @param compilationUnit the compilation unit
 	 * @param destTypeName The name of the type to which the method will be added to (Used for the constructor)
 	 * @param method A method template (method belongs to different type than the parent)
 	 * @param settings Options as defined above (GENSTUB_*)
-	 * @param extraAnnotations the annotations to add
 	 * @param imports Imports required by the sub are added to the imports structure
-	 * @return The unformatted stub
-	 * @throws CoreException 
+	 * @return The ynformatted stub
+	 * @throws JavaModelException
 	 */
 	public static String genStub(ICompilationUnit compilationUnit, String destTypeName, IMethod method, GenStubSettings settings, String extraAnnotations, ImportsManager imports) throws CoreException {
 		IType declaringtype= method.getDeclaringType();
@@ -288,11 +290,7 @@ public class S2JUnit4StubUtility {
 	}
 	
 	public static boolean is50OrHigher(IJavaProject project) {
-		return is50OrHigher(project.getOption(JavaCore.COMPILER_COMPLIANCE, true));
-	}
-	
-	public static boolean is50OrHigher(String compliance) {
-		return !isVersionLessThan(compliance, JavaCore.VERSION_1_5);
+		return !isVersionLessThan(project.getOption(JavaCore.COMPILER_COMPLIANCE, true), JavaCore.VERSION_1_5);
 	}
 	
 	public static String[] getParameterTypeNamesForSeeTag(IMethod overridden) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,47 +23,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jdt.core.Flags;
-import org.eclipse.jdt.core.IClassFile;
-import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.ITypeHierarchy;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.Signature;
-import org.eclipse.jdt.core.search.IJavaSearchScope;
-import org.eclipse.jdt.core.search.SearchEngine;
-import org.eclipse.jdt.internal.corext.util.JavaConventionsUtil;
-import org.eclipse.jdt.internal.junit.BasicElementLabels;
-import org.eclipse.jdt.internal.junit.Messages;
-import org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport;
-import org.eclipse.jdt.internal.junit.ui.IJUnitHelpContextIds;
-import org.eclipse.jdt.internal.junit.ui.JUnitPlugin;
-import org.eclipse.jdt.internal.junit.util.JUnitStatus;
 
-import org.eclipse.jdt.internal.junit.util.LayoutUtil;
-import org.eclipse.jdt.internal.junit.util.TestSearchEngine;
-
-import org.eclipse.jdt.internal.junit.wizards.MethodStubsSelectionButtonGroup;
-import org.eclipse.jdt.internal.junit.wizards.WizardMessages;
-import org.eclipse.jdt.internal.ui.refactoring.contentassist.ControlContentAssistHelper;
-import org.eclipse.jdt.internal.ui.refactoring.contentassist.JavaTypeCompletionProcessor;
-import org.eclipse.jdt.junit.wizards.NewTestCaseWizardPageTwo;
-import org.eclipse.jdt.ui.CodeGeneration;
-import org.eclipse.jdt.ui.IJavaElementSearchConstants;
-import org.eclipse.jdt.ui.JavaElementLabels;
-import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -77,9 +37,57 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
+
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
+
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.SelectionDialog;
+
+import org.eclipse.jdt.core.Flags;
+import org.eclipse.jdt.core.IClassFile;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeHierarchy;
+import org.eclipse.jdt.core.JavaConventions;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
+import org.eclipse.jdt.core.search.IJavaSearchScope;
+import org.eclipse.jdt.core.search.SearchEngine;
+
+import org.eclipse.jdt.ui.CodeGeneration;
+import org.eclipse.jdt.ui.IJavaElementSearchConstants;
+import org.eclipse.jdt.ui.JavaElementLabels;
+import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
+
+import org.eclipse.jdt.internal.ui.refactoring.contentassist.ControlContentAssistHelper;
+import org.eclipse.jdt.internal.ui.refactoring.contentassist.JavaTypeCompletionProcessor;
+
+import org.eclipse.jdt.internal.junit.Messages;
+import org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport;
+import org.eclipse.jdt.internal.junit.ui.IJUnitHelpContextIds;
+import org.eclipse.jdt.internal.junit.ui.JUnitPlugin;
+import org.eclipse.jdt.internal.junit.util.JUnitStatus;
+//import org.eclipse.jdt.internal.junit.util.JUnitStubUtility;
+import org.eclipse.jdt.internal.junit.util.LayoutUtil;
+import org.eclipse.jdt.internal.junit.util.TestSearchEngine;
+//import org.eclipse.jdt.internal.junit.util.JUnitStubUtility.GenStubSettings;
+import org.eclipse.jdt.internal.junit.wizards.MethodStubsSelectionButtonGroup;
+import org.eclipse.jdt.internal.junit.wizards.WizardMessages;
+import org.eclipse.jdt.junit.wizards.NewTestCaseWizardPageTwo;
+import org.seasar.s2junit4plugin.Constants;
 import org.seasar.s2junit4plugin.Logger;
 import org.seasar.s2junit4plugin.util.PreferenceStoreUtil;
 import org.seasar.s2junit4plugin.util.StringUtil;
@@ -88,10 +96,9 @@ import org.seasar.s2junit4plugin.wizard.S2JUnit4StubUtility.GenStubSettings;
 /**
  * The class <code>NewTestCaseWizardPageOne</code> contains controls and validation routines 
  * for the first page of the  'New JUnit TestCase Wizard'.
- * <p>
+ * 
  * Clients can use the page as-is and add it to their own wizard, or extend it to modify
  * validation or add and remove controls.
- * </p>
  * 
  * @since 3.1
  */
@@ -202,7 +209,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		IJavaElement element= getInitialJavaElement(selection);
 
 		try {
-			String mainTestPath = PreferenceStoreUtil.getPreferenceStoreOfWorkspace().getString("MainTestPath");
+			String mainTestPath = PreferenceStoreUtil.getPreferenceStoreOfWorkspace().getString(Constants.PREF_TEST_JAVA_PATH);
 			IJavaProject javaProject = element.getJavaProject();
 			IFolder folder = javaProject.getProject().getFolder(mainTestPath);
 			if(folder.exists()) {
@@ -583,6 +590,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		fS2JUnit4Toggle.setEnabled(fIsS2Junit4Enabled);
 		fS2JUnit4Toggle.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false, 1, 1));
 		fS2JUnit4Toggle.addSelectionListener(s2JUnit4Listener);
+
 	}
 	
 	/**
@@ -665,13 +673,22 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		String message= null;
 		IPackageFragmentRoot root= getPackageFragmentRoot();
 		if (root != null) {
-			IJavaProject project= root.getJavaProject();
-			if (project.exists()) {
-				if (isJUnit4()) {
-					if (!S2JUnit4StubUtility.is50OrHigher(project)) {
-						message= WizardMessages.NewTestCaseWizardPageOne_linkedtext_java5required;
+			try {
+				IJavaProject project= root.getJavaProject();
+				if (project.exists()) {
+					if (isJUnit4()) {
+						if (!S2JUnit4StubUtility.is50OrHigher(project)) {
+							message= WizardMessages.NewTestCaseWizardPageOne_linkedtext_java5required;
+						} else if (project.findType(JUnitPlugin.JUNIT4_ANNOTATION_NAME) == null) {
+							message= Messages.format(WizardMessages.NewTestCaseWizardPageOne_linkedtext_junit4_notonbuildpath, project.getElementName());
+						}
+					} else {			
+						if (project.findType(JUnitPlugin.TEST_SUPERCLASS_NAME) == null) {
+							message= Messages.format(WizardMessages.NewTestCaseWizardPageOne_linkedtext_junit3_notonbuildpath, project.getElementName());
+						}
 					}
 				}
+			} catch (JavaModelException e) {
 			}
 		}
 		fLink.setVisible(message != null);
@@ -746,8 +763,11 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		if (classToTestName.length() == 0) {
 			return status;
 		}
+		IJavaProject javaProject= root.getJavaProject();
+		String sourceLevel= javaProject.getOption(JavaCore.COMPILER_SOURCE, true);
+		String compliance= javaProject.getOption(JavaCore.COMPILER_COMPLIANCE, true);
 		
-		IStatus val= JavaConventionsUtil.validateJavaTypeName(classToTestName, root);
+		IStatus val= JavaConventions.validateJavaTypeName(classToTestName, sourceLevel, compliance);
 		if (val.getSeverity() == IStatus.ERROR) {
 			status.setError(WizardMessages.NewTestCaseWizardPageOne_error_class_to_test_not_valid); 
 			return status;
@@ -761,11 +781,11 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 				return status;
 			}
 			if (type.isInterface()) {
-				status.setWarning(Messages.format(WizardMessages.NewTestCaseWizardPageOne_warning_class_to_test_is_interface, BasicElementLabels.getJavaElementName(classToTestName))); 
+				status.setWarning(Messages.format(WizardMessages.NewTestCaseWizardPageOne_warning_class_to_test_is_interface, classToTestName)); 
 			}
 			
 			if (pack != null && !S2JUnit4StubUtility.isVisible(type, pack)) {
-				status.setWarning(Messages.format(WizardMessages.NewTestCaseWizardPageOne_warning_class_to_test_not_visible, BasicElementLabels.getJavaElementName(classToTestName)));
+				status.setWarning(Messages.format(WizardMessages.NewTestCaseWizardPageOne_warning_class_to_test_not_visible, classToTestName)); 
 			}
 			fClassUnderTest= type;
 			fPage2.setClassUnderTest(fClassUnderTest);
@@ -815,7 +835,6 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 	 * @see org.eclipse.jdt.ui.wizards.NewTypeWizardPage#createTypeMembers(org.eclipse.jdt.core.IType, org.eclipse.jdt.ui.wizards.NewTypeWizardPage.ImportsManager, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected void createTypeMembers(IType type, ImportsManager imports, IProgressMonitor monitor) throws CoreException {		
-		
 		if (isS2JUnit4() && !Flags.isAbstract(fClassUnderTest.getFlags())) { 
 			createAutoBindingField(type, monitor);
 		}
@@ -852,9 +871,8 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		}
 		
 	}
-
-	private void createAutoBindingField(IType type, IProgressMonitor monitor)
-			throws JavaModelException {
+	
+	private void createAutoBindingField(IType type, IProgressMonitor monitor) throws JavaModelException {
 		String typeName = fClassUnderTest.getElementName();
 		if(!StringUtil.isEmpty(typeName)) {
 			if(typeName.endsWith("Service") || typeName.endsWith("Dao")) {
@@ -1052,7 +1070,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 			buffer.append("void ");//$NON-NLS-1$ 
 			buffer.append(testName);
 			buffer.append("()");//$NON-NLS-1$ 
-			appendTestMethodBody(buffer, type.getCompilationUnit());
+			appendTestMethodBody(buffer, testName, method, type.getCompilationUnit(), imports);
 			type.createMethod(buffer.toString(), null, false, null);	
 		}
 	}
@@ -1081,7 +1099,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 		return getPackageFragment().findRecommendedLineSeparator();
 	}
 
-	private void appendTestMethodBody(StringBuffer buffer, ICompilationUnit targetCu) throws CoreException {
+	private void appendTestMethodBody(StringBuffer buffer, String name, IMethod method, ICompilationUnit targetCu, ImportsManager imports) throws CoreException {
 		final String delimiter= getLineDelimiter();
 		buffer.append('{').append(delimiter);
 		String todoTask= ""; //$NON-NLS-1$
@@ -1234,7 +1252,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 					return status;
 				}
 				if (!TestSearchEngine.isTestImplementor(type)) { // TODO: expensive!
-					status.setError(Messages.format(WizardMessages.NewTestCaseWizardPageOne_error_superclass_not_implementing_test_interface, BasicElementLabels.getJavaElementName(JUnitPlugin.TEST_INTERFACE_NAME))); 
+					status.setError(Messages.format(WizardMessages.NewTestCaseWizardPageOne_error_superclass_not_implementing_test_interface, JUnitPlugin.TEST_INTERFACE_NAME)); 
 					return status;
 				}
 			} catch (JavaModelException e) {

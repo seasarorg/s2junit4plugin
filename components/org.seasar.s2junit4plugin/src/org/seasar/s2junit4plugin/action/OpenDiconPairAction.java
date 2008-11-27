@@ -30,6 +30,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.ide.IDE;
 import org.seasar.s2junit4plugin.Activator;
+import org.seasar.s2junit4plugin.Constants;
 import org.seasar.s2junit4plugin.Logger;
 import org.seasar.s2junit4plugin.util.JDTUtil;
 import org.seasar.s2junit4plugin.util.PreferenceStoreUtil;
@@ -96,7 +97,7 @@ public class OpenDiconPairAction implements IEditorActionDelegate, IObjectAction
 					IDE.openEditor(workbench.getActiveWorkbenchWindow().getActivePage(), diconPair);
 				}
 				else {
-					String testResourcesPath = PreferenceStoreUtil.getPreferenceStoreOfWorkspace().getString("TestResourcesPath");
+					String testResourcesPath = PreferenceStoreUtil.getPreferenceStoreOfWorkspace().getString(Constants.PREF_TEST_RESOURCES_PATH);
 					IFolder folder = javaProject.getProject().getFolder(testResourcesPath);
 					IPackageFragmentRoot packageFragmentRoot = javaProject.findPackageFragmentRoot(folder.getFullPath());
 					NewDiconWizard wizard = new NewDiconWizard(type.getPackageFragment(), packageFragmentRoot, type.getTypeQualifiedName() + ".dicon");

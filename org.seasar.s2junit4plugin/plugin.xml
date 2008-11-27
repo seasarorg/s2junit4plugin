@@ -74,7 +74,7 @@
       </objectContribution>
       <viewerContribution
             id="org.seasar.s2junit4plugin.viewerContribution.diconFile"
-            targetID="#DiconEditorContext">
+            targetID="#TextEditorContext">
          <action
                class="org.seasar.s2junit4plugin.action.OpenClassPairAction"
                definitionId="org.seasar.s2junit4plugin.command.openClassPair"

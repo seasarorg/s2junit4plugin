@@ -229,14 +229,6 @@
       </page>
    </extension>
    <extension
-         point="org.eclipse.ui.propertyPages">
-      <page
-            class="org.seasar.s2junit4plugin.property.QuickJUnitInfoPage"
-            id="org.seasar.s2junit4plugin.page.QuickJUnitInfoPage"
-            name="S2JUnit4">
-      </page>
-   </extension>
-   <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="org.seasar.s2junit4plugin.preference.S2JUnit4PreferenceInitializer">

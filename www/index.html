@@ -83,7 +83,7 @@ S2JUnit4Pluginは<a href="http://s2container.seasar.org/2.4/ja/S2JUnit4.html">S2
 
 <h3><a name="Usage">使い方</a></h3>
 <p>S2JUnit4Pluginは<a href="http://www.junit.org/">JUnit</a>の起動およびクラスとテストケースクラスおよびテストケースクラスとテストケースdiconのエディタ切り替えを簡単に行うためのEclipseプラグインです。
-テストケースクラスとテストケースdiconのエディタ切り替えはS2JUnit4のみ有効です。
+テストケースクラスとテストケースdiconのエディタ切り替えはS2JUnit4のみ有効です。diconのエディタとしては<a href="http://kijimuna.seasar.org/">Kijimuna</a>があります。
 </p>
 
 <p>Javaファイルから起動する</p>
@@ -144,11 +144,14 @@ S2JUnit4Pluginは<a href="http://s2container.seasar.org/2.4/ja/S2JUnit4.html">S2
   <img src="images/dialog.png"/>
   <ol><li value="2">OKをクリックするとウィザードが開きます。</li></ol>
   <img src="images/wizard.png"/>
+  <ol><li value="3">Nextをクリックすると次のウィザードが開きます。</li></ol>
+  <img src="images/next-wizard.png"/>
 </ol>
 
 <p>
-生成されるテストケースクラスは以下のようになります。ServiceとDaoに対して生成した場合は自動バインディングフィールドがprivateフィールド宣言されます。
-以下の例だとempServiceがそうです。
+上記ウイザードでfindById, findByIdVersion,findAllOrderByIdの３つのメソッドを選択すると生成されるテストケースクラスは以下のようになります。ServiceとDaoに対して生成した場合は自動バインディングフィールドがprivateフィールド宣言されます。
+以下の例だとempServiceがそうです。そのほかstatic import宣言、RunWithアノテーションが最初から付加されていますので、すぐにテストを実行して失敗になることを確認できます。
+これによりテスト失敗→コード修正→テスト成功のステップがスムーズになります。
 </p>
 
 <pre>
@@ -163,6 +166,29 @@ import org.seasar.framework.unit.Seasar2;
 public class EmpServiceTest {
 
 	private EmpService empService;
+
+	public void testFindById() {
+		fail("Not yet implemented");
+	}
+
+	public void testFindByIdVersion() {
+		fail("Not yet implemented");
+	}
+
+	public void testFindAllOrderById() {
+		fail("Not yet implemented");
+	}
+
+}
+</pre>
+
+<p>S2Unitを選択して生成した場合は以下のようになります。</p>
+<pre>
+package aaa.service;
+
+import org.seasar.extension.unit.S2TestCase;
+
+public class EmpServiceTest extends S2TestCase {
 
 	public void testFindById() {
 		fail("Not yet implemented");
@@ -196,6 +222,10 @@ public class EmpServiceTest {
 	
 &lt;/components&gt;
 </pre>
+
+<p>
+なおテストケースdiconをもとにテストケースクラスを生成することはできません。つまりテストケースクラスが無い状態でテストケースdiconファイル上でCtrl+Shift+9しても何も起こりません。
+</p>
 
 <p>ウィザードでテストケースクラス、テストケースdiconを生成する場合のデフォルトの保存場所や生成タイプは「ウィンドウ」―「設定」―「S2JUnit4」で
 変更することができます。

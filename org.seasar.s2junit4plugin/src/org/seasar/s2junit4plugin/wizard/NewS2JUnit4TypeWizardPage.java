@@ -13,6 +13,8 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  *
+ * This is a program source code derived from the Eclipse Software.
+ * An original copyright notice is as follows.
  *******************************************************************************
  * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials

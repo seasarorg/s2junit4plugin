@@ -12,6 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
+ * 
+ * This is a program source code derived from the Quick JUnit Plugin for Eclipse.
+ * An original copyright:Copyright © 2003-2008 Masaru Ishii,The Quick JUnit Plugin Project.
  */
 package org.seasar.s2junit4plugin.action;
 

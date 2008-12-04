@@ -52,7 +52,6 @@
                   <action
                class="org.seasar.s2junit4plugin.action.OpenDiconPairAction"
                definitionId="org.seasar.s2junit4plugin.command.openDiconPair"
-               icon="icons/skip.gif"
                id="org.seasar.s2junit4plugin.action.openDiconPair"
                label="Open TestCase Dicon Pair"
                menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions">
@@ -66,7 +65,6 @@
          <action
                class="org.seasar.s2junit4plugin.action.OpenClassPairAction"
                definitionId="org.seasar.s2junit4plugin.command.openDiconPair"
-               icon="icons/skip.gif"
                id="org.seasar.s2junit4plugin.action.openClassPair"
                label="Open TestCase Class Pair"
                menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions">
@@ -78,7 +76,6 @@
          <action
                class="org.seasar.s2junit4plugin.action.OpenClassPairAction"
                definitionId="org.seasar.s2junit4plugin.command.openClassPair"
-               icon="icons/skip.gif"
                id="org.seasar.s2junit4plugin.action.openClassPair"
                label="Open TestCase Class Pair"
                menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions2">
@@ -200,7 +197,6 @@
          <action
                class="org.seasar.s2junit4plugin.action.OpenDiconPairAction"
                definitionId="org.seasar.s2junit4plugin.command.openDiconPair"
-               icon="icons/skip.gif"
                id="org.seasar.s2junit4plugin.action.openDiconPair"
                label="Open TestCase Dicon Pair"
                menubarPath="Edit/org.seasar.s2junit4plugin.editorContribution.menu/additions">
@@ -213,7 +209,6 @@
          <action
                class="org.seasar.s2junit4plugin.action.OpenClassPairAction"
                definitionId="org.seasar.s2junit4plugin.command.openDiconPair"
-               icon="icons/skip.gif"
                id="org.seasar.s2junit4plugin.action.openClassPair"
                label="Open TestCase Class Pair"
                menubarPath="Edit/org.seasar.s2junit4plugin.editorContribution.menu/additions">

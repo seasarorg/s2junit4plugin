@@ -82,6 +82,7 @@ public class JavaElements {
                 if (hasSuiteMethod(type)) return element;
                 if (hasSuiteAnnotation(type)) return element;
                 if (hasTestAnnotation(type)) return element;
+                if (hasS2JUnit4Annotation(type)) return element;
             }
             element = element.getParent();
         }

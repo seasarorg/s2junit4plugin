@@ -2,7 +2,7 @@
 <feature
       id="org.seasar.s2junit4plugin.feature"
       label="S2JUnit4 Plugin for Eclipse"
-      version="0.1.0.qualifier"
+      version="0.1.1.qualifier"
       provider-name="Seasar.org"
       plugin="org.seasar.s2junit4plugin">
 
@@ -227,7 +227,7 @@
          id="org.seasar.s2junit4plugin"
          download-size="0"
          install-size="0"
-         version="0.1.0.qualifier"
+         version="0.1.1.qualifier"
          unpack="false"/>
 
 </feature>

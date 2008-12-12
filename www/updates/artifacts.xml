@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?artifactRepository class='org.eclipse.equinox.internal.p2.artifact.repository.simple.SimpleArtifactRepository' version='1.0.0'?>
+<repository name='file:/C:/Users/ppoi/Projects/s2junit4plugin/workspace/components/dev-updates/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
+  <properties size='2'>
+    <property name='p2.compressed' value='false'/>
+    <property name='p2.timestamp' value='1229065707078'/>
+  </properties>
+  <mappings size='3'>
+    <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
+    <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
+    <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
+  </mappings>
+  <artifacts size='2'>
+    <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812121608'>
+      <properties size='3'>
+        <property name='artifact.size' value='160570'/>
+        <property name='download.size' value='160570'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812121608'>
+      <properties size='2'>
+        <property name='artifact.size' value='15274'/>
+        <property name='download.size' value='15274'/>
+      </properties>
+    </artifact>
+  </artifacts>
+</repository>

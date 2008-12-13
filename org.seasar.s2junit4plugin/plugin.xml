@@ -53,7 +53,7 @@
                class="org.seasar.s2junit4plugin.action.OpenDiconPairAction"
                definitionId="org.seasar.s2junit4plugin.command.openDiconPair"
                id="org.seasar.s2junit4plugin.action.openDiconPair"
-               label="Open TestCase Dicon Pair"
+               label="%OpenDiconPairAction.label"
                menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions">
          </action>
       </objectContribution>
@@ -66,7 +66,7 @@
                class="org.seasar.s2junit4plugin.action.OpenClassPairAction"
                definitionId="org.seasar.s2junit4plugin.command.openDiconPair"
                id="org.seasar.s2junit4plugin.action.openClassPair"
-               label="Open TestCase Class Pair"
+               label="%OpenClassPairAction.label"
                menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions">
          </action>
       </objectContribution>
@@ -77,7 +77,7 @@
                class="org.seasar.s2junit4plugin.action.OpenClassPairAction"
                definitionId="org.seasar.s2junit4plugin.command.openClassPair"
                id="org.seasar.s2junit4plugin.action.openClassPair"
-               label="Open TestCase Class Pair"
+               label="%OpenClassPairAction.label"
                menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions2">
          </action>
          <menu

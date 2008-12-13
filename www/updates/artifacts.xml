@@ -1,16 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?artifactRepository class='org.eclipse.equinox.internal.p2.artifact.repository.simple.SimpleArtifactRepository' version='1.0.0'?>
-<repository name='file:/C:/Users/ppoi/Projects/s2junit4plugin/workspace/components/dev-updates/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
+<repository name='file:/C:/Users/ppoi/Projects/s2junit4plugin/workspace/components/dev-updates/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1229065707078'/>
+    <property name='p2.timestamp' value='1229181693667'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
     <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
     <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
   </mappings>
-  <artifacts size='2'>
+  <artifacts size='22'>
+    <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812132347'>
+      <properties size='2'>
+        <property name='artifact.size' value='15276'/>
+        <property name='download.size' value='15276'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812121608'>
       <properties size='3'>
         <property name='artifact.size' value='160570'/>
@@ -18,10 +24,134 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812132324'>
+      <properties size='2'>
+        <property name='artifact.size' value='15275'/>
+        <property name='download.size' value='15275'/>
+      </properties>
+    </artifact>
     <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812121608'>
       <properties size='2'>
         <property name='artifact.size' value='15274'/>
         <property name='download.size' value='15274'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812131820'>
+      <properties size='3'>
+        <property name='artifact.size' value='160718'/>
+        <property name='download.size' value='160718'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812132210'>
+      <properties size='2'>
+        <property name='artifact.size' value='15275'/>
+        <property name='download.size' value='15275'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812131820'>
+      <properties size='2'>
+        <property name='artifact.size' value='15276'/>
+        <property name='download.size' value='15276'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812132253'>
+      <properties size='3'>
+        <property name='artifact.size' value='160759'/>
+        <property name='download.size' value='160759'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812140021'>
+      <properties size='3'>
+        <property name='artifact.size' value='160987'/>
+        <property name='download.size' value='160987'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812131806'>
+      <properties size='2'>
+        <property name='artifact.size' value='15276'/>
+        <property name='download.size' value='15276'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812140001'>
+      <properties size='3'>
+        <property name='artifact.size' value='160952'/>
+        <property name='download.size' value='160952'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812140001'>
+      <properties size='2'>
+        <property name='artifact.size' value='15276'/>
+        <property name='download.size' value='15276'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812132324'>
+      <properties size='3'>
+        <property name='artifact.size' value='160848'/>
+        <property name='download.size' value='160848'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812131756'>
+      <properties size='2'>
+        <property name='artifact.size' value='15276'/>
+        <property name='download.size' value='15276'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812132347'>
+      <properties size='3'>
+        <property name='artifact.size' value='160903'/>
+        <property name='download.size' value='160903'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812132321'>
+      <properties size='2'>
+        <property name='artifact.size' value='15275'/>
+        <property name='download.size' value='15275'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812132210'>
+      <properties size='3'>
+        <property name='artifact.size' value='160745'/>
+        <property name='download.size' value='160745'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812132321'>
+      <properties size='3'>
+        <property name='artifact.size' value='160846'/>
+        <property name='download.size' value='160846'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812140021'>
+      <properties size='2'>
+        <property name='artifact.size' value='15276'/>
+        <property name='download.size' value='15276'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.seasar.s2junit4plugin.feature' version='0.1.1.200812132253'>
+      <properties size='2'>
+        <property name='artifact.size' value='15275'/>
+        <property name='download.size' value='15275'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812131806'>
+      <properties size='3'>
+        <property name='artifact.size' value='162274'/>
+        <property name='download.size' value='162274'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.seasar.s2junit4plugin' version='0.1.1.200812131756'>
+      <properties size='3'>
+        <property name='artifact.size' value='160718'/>
+        <property name='download.size' value='160718'/>
+        <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
   </artifacts>

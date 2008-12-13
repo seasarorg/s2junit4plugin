@@ -33,6 +33,7 @@ import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -46,6 +47,7 @@ import org.eclipse.ui.ide.IDE;
 import org.seasar.s2junit4plugin.Activator;
 import org.seasar.s2junit4plugin.Constants;
 import org.seasar.s2junit4plugin.Logger;
+import org.seasar.s2junit4plugin.Messages;
 import org.seasar.s2junit4plugin.util.JDTUtil;
 import org.seasar.s2junit4plugin.util.PreferenceStoreUtil;
 import org.seasar.s2junit4plugin.util.ResouceUtil;
@@ -89,12 +91,12 @@ public class OpenDiconPairAction implements IEditorActionDelegate, IObjectAction
 				String compiliance = javaProject.getOption(JavaCore.COMPILER_COMPLIANCE, true);
 				try {
 					if(Float.parseFloat(compiliance) < 1.5) {
-						Logger.debug("not S2Junit4 environemnt. copliance=" + compiliance);
+						Logger.debug("not S2Junit4 environemnt. copliance=" + compiliance); //$NON-NLS-1$
 						return;
 					}
 				}
 				catch(NumberFormatException nfe) {
-					Logger.warn("Illegal Compiler Level: " + compiliance, nfe);
+					Logger.warn("Illegal Compiler Level: " + compiliance, nfe); //$NON-NLS-1$
 					return;
 				}
 
@@ -104,17 +106,21 @@ public class OpenDiconPairAction implements IEditorActionDelegate, IObjectAction
 				}
 
 				IFile diconPair = getDiconPair(type);
-				Logger.debug("diconPair=" + diconPair);
+				Logger.debug("diconPair=" + diconPair); //$NON-NLS-1$
 
 				IWorkbench workbench = Activator.getDefault().getWorkbench();
 				if(diconPair != null) {
 					IDE.openEditor(workbench.getActiveWorkbenchWindow().getActivePage(), diconPair);
 				}
 				else {
+					if(!MessageDialog.openQuestion(workbench.getActiveWorkbenchWindow().getShell(),
+							action.getText(), Messages.getString("OpenDiconPairAction.creationConfirmMessage"))) { //$NON-NLS-1$
+						return;
+					}
 					String testResourcesPath = PreferenceStoreUtil.getPreferenceStoreOfWorkspace().getString(Constants.PREF_TEST_RESOURCES_PATH);
 					IFolder folder = javaProject.getProject().getFolder(testResourcesPath);
 					IPackageFragmentRoot packageFragmentRoot = javaProject.findPackageFragmentRoot(folder.getFullPath());
-					NewDiconWizard wizard = new NewDiconWizard(type.getPackageFragment(), packageFragmentRoot, type.getTypeQualifiedName() + ".dicon");
+					NewDiconWizard wizard = new NewDiconWizard(type.getPackageFragment(), packageFragmentRoot, type.getTypeQualifiedName() + ".dicon"); //$NON-NLS-1$
 					wizard.init(workbench, new StructuredSelection());
 					new WizardDialog(workbench.getActiveWorkbenchWindow().getShell(), wizard).open();
 				}
@@ -145,7 +151,7 @@ public class OpenDiconPairAction implements IEditorActionDelegate, IObjectAction
 	 * @throws JavaModelException JDTエラーが発生した場合
 	 */
 	protected IFile getDiconPair(IType type) throws JavaModelException {
-		String diconFileName = type.getFullyQualifiedName().replace('.', '/') + ".dicon";
+		String diconFileName = type.getFullyQualifiedName().replace('.', '/') + ".dicon"; //$NON-NLS-1$
 		IJavaProject javaProject = type.getJavaProject();
 		IWorkspaceRoot root = javaProject.getProject().getWorkspace().getRoot();
 		for(IPath sourceFolder : JDTUtil.getSourceFolders(javaProject)) {
@@ -170,7 +176,7 @@ public class OpenDiconPairAction implements IEditorActionDelegate, IObjectAction
 		if((extension != null) && !fileName.equals(extension)) {
 			fileName = fileName.substring(0, (fileName.length() - extension.length() - 1));
 		}
-		Logger.debug("file=" + fileName);
+		Logger.debug("file=" + fileName); //$NON-NLS-1$
 
 		for(IType type : compilationUnit.getTypes()) {
 			if(fileName.equals(type.getTypeQualifiedName())) {
@@ -179,7 +185,7 @@ public class OpenDiconPairAction implements IEditorActionDelegate, IObjectAction
 				}
 			}
 		}
-		Logger.debug("not S2Junut4 testcase.");
+		Logger.debug("not S2Junut4 testcase."); //$NON-NLS-1$
 		return null;
 	}
 
@@ -194,13 +200,13 @@ public class OpenDiconPairAction implements IEditorActionDelegate, IObjectAction
 		IBinding[] bindings = parser.createBindings(new IType[]{type}, null);
 		IAnnotationBinding[] annotations = bindings[0].getAnnotations();
 		for(IAnnotationBinding annotation : annotations) {
-			Logger.debug("annotation=" + annotation.getName());
-			if("org.junit.runner.RunWith".equals(annotation.getAnnotationType().getQualifiedName())) {
+			Logger.debug("annotation=" + annotation.getName()); //$NON-NLS-1$
+			if("org.junit.runner.RunWith".equals(annotation.getAnnotationType().getQualifiedName())) { //$NON-NLS-1$
 				for(IMemberValuePairBinding value : annotation.getAllMemberValuePairs()) {
-					Logger.debug("anno params=" + value.getName() + " / " + value.getValue());
-					if("value".equals(value.getName())) {
+					Logger.debug("anno params=" + value.getName() + " / " + value.getValue()); //$NON-NLS-1$ //$NON-NLS-2$
+					if("value".equals(value.getName())) { //$NON-NLS-1$
 						ITypeBinding runwithType = (ITypeBinding)value.getValue();
-						return "org.seasar.framework.unit.Seasar2".equals(runwithType.getQualifiedName());
+						return "org.seasar.framework.unit.Seasar2".equals(runwithType.getQualifiedName()); //$NON-NLS-1$
 					}
 				}
 			}

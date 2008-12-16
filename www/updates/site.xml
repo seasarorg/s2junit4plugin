@@ -4,4 +4,5 @@
       Eclipse update site for development version products
    </description>
    <feature url="features/org.seasar.s2junit4plugin.feature_0.1.1.200812140021.jar" id="org.seasar.s2junit4plugin.feature" version="0.1.1.200812140021"/>
+   <feature url="features/org.seasar.s2junit4plugin.feature_0.1.2.200812160911.jar" id="org.seasar.s2junit4plugin.feature" version="0.1.2.200812160911"/>
 </site>

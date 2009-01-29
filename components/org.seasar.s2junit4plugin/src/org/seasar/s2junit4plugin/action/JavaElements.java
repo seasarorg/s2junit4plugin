@@ -72,6 +72,9 @@ public class JavaElements {
 
     public static IJavaElement getTestMethodOrClass(IJavaElement element)
             throws JavaModelException {
+        if (element.getElementType() == IJavaElement.COMPILATION_UNIT) {
+            element = ((ICompilationUnit) element).findPrimaryType();
+        }
         while (element != null) {
             if (isTestMethod(element))
                 return element;

@@ -36,7 +36,7 @@ public class TestingPair {
 
     public String[] getPairClassNames(String className) {
         Set result = new LinkedHashSet();
-        className = chopInnerClassName(className);
+        className = getInnerClassName(className);
         addTestedClassNames(className, result);
         if (result.isEmpty()) {
             addTestClassNames(className, result);
@@ -120,10 +120,10 @@ public class TestingPair {
         return result.replaceAll("\\$\\{type\\}", typeName);
     }
 
-    private String chopInnerClassName(String className) {
+    private String getInnerClassName(String className) {
         int index = className.indexOf('$');
         if (index == -1)
             return className;
-        return className.substring(0, index);
+        return className.substring(index + 1, className.length());
     }
 }

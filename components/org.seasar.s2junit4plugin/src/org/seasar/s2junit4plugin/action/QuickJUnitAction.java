@@ -22,6 +22,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.action.IAction;
@@ -35,8 +36,10 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IObjectActionDelegate;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.seasar.s2junit4plugin.Activator;
 
 public abstract class QuickJUnitAction implements IEditorActionDelegate, IObjectActionDelegate {
     private Shell shell;
@@ -44,12 +47,7 @@ public abstract class QuickJUnitAction implements IEditorActionDelegate, IObject
     protected ITextEditor javaEditor;
     
     public void setActiveEditor(IAction action, IEditorPart targetEditor) {
-        if (!(targetEditor instanceof ITextEditor)) {
-            javaEditor = null;
-            return;
-        }
-        javaEditor = (ITextEditor) targetEditor;
-        shell = javaEditor.getSite().getShell();
+        shell = targetEditor.getSite().getShell();
     }
 
     public void setActivePart(IAction action, IWorkbenchPart targetPart) {
@@ -84,22 +82,31 @@ public abstract class QuickJUnitAction implements IEditorActionDelegate, IObject
         ICompilationUnit unit = getCompilationUnitOfJavaEditor();
         if (unit == null)
             return null;
-        ISelectionProvider provider = javaEditor.getSelectionProvider();
+        ISelectionProvider provider = ((ITextEditor) Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor()).getSelectionProvider();
         ISelection selection = provider.getSelection();
         if (!(selection instanceof ITextSelection))
             return null;
         int offset = ((ITextSelection) selection).getOffset();
         IJavaElement element = unit.getElementAt(offset);
+        if (element == null) {
+            element = getTypeOfCompilationUnit(unit);
+        }
         return element;
     }
     
     protected ICompilationUnit getCompilationUnitOfJavaEditor() throws JavaModelException {
-        if (javaEditor == null)
-            return null;
-        IEditorInput input = javaEditor.getEditorInput();
-        IJavaElement element = (IJavaElement) input.getAdapter(IJavaElement.class);
-        if (element instanceof ICompilationUnit)
-            return (ICompilationUnit) element;
+        IWorkbenchPage page = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        if (page.getActivePart() instanceof ITextEditor) {
+            IEditorInput input = page.getActiveEditor().getEditorInput();
+            IJavaElement element = (IJavaElement) input.getAdapter(IJavaElement.class);
+            if (element instanceof ICompilationUnit)
+                return (ICompilationUnit) element;
+        }
         return null;
     }
+    
+    protected IType getTypeOfCompilationUnit(ICompilationUnit unit) {
+        return unit.findPrimaryType();
+    }
+    
 }

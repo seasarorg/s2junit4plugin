@@ -52,6 +52,7 @@ public class DefaultFolderPreference extends Composite{
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
 		group.setLayout(gridLayout);
+		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		Label mainTestPathLabel = new Label(group, SWT.NULL);
 		mainTestPathLabel.setText(Messages.getString("Preference.TestSourceFolder")); //$NON-NLS-1$
@@ -69,7 +70,7 @@ public class DefaultFolderPreference extends Composite{
 		Group group2 = new Group(this,SWT.NONE);
 		group2.setText(Messages.getString("Preference.GenerationType")); //$NON-NLS-1$
 		GridLayout gridLayout2 = new GridLayout();
-//		gridLayout2.numColumns = 4;
+		gridLayout2.numColumns = 4;
 		group2.setLayout(gridLayout2);
 		
 		junti3Toggle= new Button(group2, SWT.RADIO);

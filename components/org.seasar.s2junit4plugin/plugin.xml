@@ -243,5 +243,18 @@
          </action>
       </actionSet>
    </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="org.seasar.s2junit4plugin.property.QuickJUnitPropertyPage"
+            id="org.seasar.s2junit4plugin_goooooooooosukeSandbox.page.QuickJUnitPropertyPage"
+            name="S2JUnit4">
+         <enabledWhen>
+            <instanceof
+                  value="org.eclipse.jdt.core.IJavaProject">
+            </instanceof>
+         </enabledWhen>
+      </page>
+   </extension>
 
 </plugin>

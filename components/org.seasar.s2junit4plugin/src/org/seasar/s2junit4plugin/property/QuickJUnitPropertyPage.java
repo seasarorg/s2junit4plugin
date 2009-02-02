@@ -32,7 +32,7 @@ public class QuickJUnitPropertyPage extends PropertyPage {
 		TabItem item1 = new TabItem(tabFolder, SWT.NULL);
 		item1.setText(Messages.getString("Preference.tabItem.defaultFolder")); //$NON-NLS-1$
 		
-		defaultFolderPreference = new DefaultFolderPreference(store, tabFolder);
+		defaultFolderPreference = new DefaultFolderPreference((IJavaProject) getElement(), tabFolder);
 		item1.setControl(defaultFolderPreference);
 		
 		TabItem item2 = new TabItem(tabFolder, SWT.NULL);

@@ -15,8 +15,12 @@
  */
 package org.seasar.s2junit4plugin.preference;
 
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -26,6 +30,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.seasar.s2junit4plugin.Constants;
 import org.seasar.s2junit4plugin.Messages;
+import org.seasar.s2junit4plugin.util.PreferenceStoreUtil;
+import org.seasar.s2junit4plugin.wiget.SourceFolderTreeSelectionDialog;
 
 
 public class DefaultFolderPreference extends Composite{
@@ -37,6 +43,18 @@ public class DefaultFolderPreference extends Composite{
 	private Button jnit4Toggle;
 	private Button s2unitToggle;
 	private Button s2junit4Toggle;
+	
+	private IJavaProject javaProject;
+	private Button testJavaPathButton;
+	private Button testResourcePathButton;
+	
+	
+	public DefaultFolderPreference(IJavaProject javaProject, Composite parent) {
+		this(PreferenceStoreUtil.getPreferenceStoreOfProject(javaProject.getProject()), parent);
+		this.javaProject = javaProject;
+		testJavaPathButton.setEnabled(true);
+		testResourcePathButton.setEnabled(true);
+	}
 	
 	public DefaultFolderPreference(IPreferenceStore store, Composite parent) {
 		super(parent, SWT.NONE);
@@ -50,7 +68,7 @@ public class DefaultFolderPreference extends Composite{
 		Group group = new Group(this,SWT.NONE);
 		group.setText(Messages.getString("Preference.CodeGeneration")); //$NON-NLS-1$
 		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 2;
+		gridLayout.numColumns = 3;
 		group.setLayout(gridLayout);
 		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
@@ -59,11 +77,29 @@ public class DefaultFolderPreference extends Composite{
 		testJavaPath = new Text(group, SWT.BORDER);
 		testJavaPath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		testJavaPath.setText(store.getString(Constants.PREF_TEST_JAVA_PATH)); //$NON-NLS-1$
+		testJavaPathButton = new Button(group, SWT.BUTTON1);
+		testJavaPathButton.setText(Messages.getString("Preference.TestSourceBrowse")); //$NON-NLS-1$
+		testJavaPathButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				// TODO 
+				chooseFolder(testJavaPath, Messages.getString("Preference.TestSourceFolderSelection.title"), Messages.getString("Preference.TestSourceFolderSelection.message"));
+			}
+		});
+		testJavaPathButton.setEnabled(false);
 		Label testResourcesPathLabel = new Label(group, SWT.NULL);
 		testResourcesPathLabel.setText(Messages.getString("Preference.TestResourceFolder")); //$NON-NLS-1$
 		testResourcesPath = new Text(group, SWT.BORDER);
 		testResourcesPath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		testResourcesPath.setText(store.getString("TestResourcesPath")); //$NON-NLS-1$
+		testResourcePathButton = new Button(group, SWT.BUTTON1);
+		testResourcePathButton.setText(Messages.getString("Preference.TestResourceBrowse")); //$NON-NLS-1$
+		testResourcePathButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				// TODO 
+				chooseFolder(testResourcesPath, Messages.getString("Preference.TestResourceFolderSelection.title"), Messages.getString("Preference.TestResourceFolderSelection.message"));
+			}
+		});
+		testResourcePathButton.setEnabled(false);
 		
 		new Label(this, SWT.NULL);
 		
@@ -128,5 +164,12 @@ public class DefaultFolderPreference extends Composite{
     	s2unitToggle.setSelection(false);
     	s2junit4Toggle.setSelection(true);
     }
+
+	private void chooseFolder(Text txt, String title, String message) {
+		SourceFolderTreeSelectionDialog dialog = new SourceFolderTreeSelectionDialog(getShell(), javaProject, title, message);
+		if (dialog.open() == Dialog.OK) {
+			txt.setText(dialog.getSelectedSourceFolder());
+		}
+	}
 
 }

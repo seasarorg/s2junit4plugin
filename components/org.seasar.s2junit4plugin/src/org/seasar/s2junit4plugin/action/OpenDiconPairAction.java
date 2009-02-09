@@ -117,7 +117,7 @@ public class OpenDiconPairAction implements IEditorActionDelegate, IObjectAction
 							action.getText(), Messages.getString("OpenDiconPairAction.creationConfirmMessage"))) { //$NON-NLS-1$
 						return;
 					}
-					String testResourcesPath = PreferenceStoreUtil.getPreferenceStoreOfWorkspace().getString(Constants.PREF_TEST_RESOURCES_PATH);
+					String testResourcesPath = PreferenceStoreUtil.getPreferenceStore(javaProject.getProject()).getString(Constants.PREF_TEST_RESOURCES_PATH);
 					IFolder folder = javaProject.getProject().getFolder(testResourcesPath);
 					IPackageFragmentRoot packageFragmentRoot = javaProject.findPackageFragmentRoot(folder.getFullPath());
 					NewDiconWizard wizard = new NewDiconWizard(type.getPackageFragment(), packageFragmentRoot, type.getTypeQualifiedName() + ".dicon"); //$NON-NLS-1$

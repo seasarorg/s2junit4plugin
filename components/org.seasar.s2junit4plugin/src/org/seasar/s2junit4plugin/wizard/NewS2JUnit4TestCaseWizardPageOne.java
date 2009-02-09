@@ -184,7 +184,7 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 	private Link fLink;
 	private Label fImage;
 	
-	private IPreferenceStore store = PreferenceStoreUtil.getPreferenceStoreOfWorkspace();
+	private IPreferenceStore store;
 
 	/**
 	 * Creates a new <code>NewTestCaseCreationWizardPage</code>.
@@ -228,9 +228,9 @@ public class NewS2JUnit4TestCaseWizardPageOne extends NewS2JUnit4TypeWizardPage 
 	 */
 	public void init(IStructuredSelection selection) {
 		IJavaElement element= getInitialJavaElement(selection);
-
+		store = PreferenceStoreUtil.getPreferenceStore(element.getJavaProject().getProject());
 		try {
-			String mainTestPath = PreferenceStoreUtil.getPreferenceStoreOfWorkspace().getString(Constants.PREF_TEST_JAVA_PATH);
+			String mainTestPath = store.getString(Constants.PREF_TEST_JAVA_PATH);
 			IJavaProject javaProject = element.getJavaProject();
 			IFolder folder = javaProject.getProject().getFolder(mainTestPath);
 			if(folder.exists()) {

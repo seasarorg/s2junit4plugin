@@ -56,6 +56,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.seasar.s2junit4plugin.Messages;
 import org.seasar.s2junit4plugin.action.NamingRule;
 import org.seasar.s2junit4plugin.action.NamingRules;
+import org.seasar.s2junit4plugin.util.PreferenceStoreUtil;
 
 
 public class NamingRulesPreference extends Composite {
@@ -70,6 +71,9 @@ public class NamingRulesPreference extends Composite {
     private int widthHint;
     private NamingRules namingRules;
 
+    private Table table;
+    private Button addButton;
+    
     public NamingRulesPreference(IPreferenceStore store, Composite tabFolder, int widthHint) {
     	super(tabFolder, SWT.NULL);
     	namingRules = new NamingRules(store);
@@ -107,7 +111,7 @@ public class NamingRulesPreference extends Composite {
         gd.horizontalSpan = 2;
         label.setLayoutData(gd);
 
-        Table table = new Table(container, SWT.CHECK | SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
+        table = new Table(container, SWT.CHECK | SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
 
         gd= new GridData(GridData.FILL_HORIZONTAL);
         table.setLayoutData(gd);
@@ -180,7 +184,7 @@ public class NamingRulesPreference extends Composite {
             public void handleEvent(Event e) {
                 addNamingRule();
             }};
-        createButton("addButton", buttonContainer, listener, true); //$NON-NLS-1$
+        addButton = createButton("addButton", buttonContainer, listener, true); //$NON-NLS-1$
 
         listener = new Listener() {
             public void handleEvent(Event e) {
@@ -220,10 +224,11 @@ public class NamingRulesPreference extends Composite {
     }
 
     private void updateButtons() {
+        addButton.setEnabled(true);
         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-        removeButton.setEnabled(!selection.isEmpty());
         editButton.setEnabled(selection.size() == 1);
         int rowCount = tableViewer.getTable().getItemCount();
+        removeButton.setEnabled(!selection.isEmpty() && rowCount > 1 && selection.size() != rowCount);
         boolean canMove = selection.size() == 1 &&  rowCount > 1;
         if (!canMove) {
             moveUpButton.setEnabled(false);
@@ -342,12 +347,31 @@ public class NamingRulesPreference extends Composite {
         return gd;
     }
     
-    public void store() {
+    public void store(IPreferenceStore preferenceStore) {
+    	namingRules = new NamingRules(preferenceStore);
     	namingRules.set(namingRulesValue);
+    	namingRulesValue = namingRules.get();
     }
     
     public void loadDefault() {
         this.namingRulesValue = namingRules.getDefault();
         updateView();
     }
+    
+    public void loadWorkspaceSetting() {
+        namingRulesValue = new NamingRules(PreferenceStoreUtil.getPreferenceStoreOfWorkspace()).get();
+        updateView();
+    }
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		updateButtons();
+		table.setEnabled(enabled);
+		addButton.setEnabled(addButton.getEnabled() && enabled);
+		removeButton.setEnabled(removeButton.getEnabled() && enabled);
+		editButton.setEnabled(editButton.getEnabled() && enabled);
+		moveUpButton.setEnabled(moveUpButton.getEnabled() && enabled);
+		moveDownButton.setEnabled(moveDownButton.getEnabled() && enabled);
+	}
 }

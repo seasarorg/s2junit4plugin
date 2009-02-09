@@ -46,14 +46,14 @@ public class DefaultFolderPreference extends Composite{
 	
 	private IJavaProject javaProject;
 	private Button testJavaPathButton;
-	private Button testResourcePathButton;
+	private Button testResourcesPathButton;
 	
 	
 	public DefaultFolderPreference(IJavaProject javaProject, Composite parent) {
-		this(PreferenceStoreUtil.getPreferenceStoreOfProject(javaProject.getProject()), parent);
+		this(PreferenceStoreUtil.getPreferenceStore(javaProject.getProject()), parent);
 		this.javaProject = javaProject;
 		testJavaPathButton.setEnabled(true);
-		testResourcePathButton.setEnabled(true);
+		testResourcesPathButton.setEnabled(true);
 	}
 	
 	public DefaultFolderPreference(IPreferenceStore store, Composite parent) {
@@ -81,7 +81,6 @@ public class DefaultFolderPreference extends Composite{
 		testJavaPathButton.setText(Messages.getString("Preference.TestSourceBrowse")); //$NON-NLS-1$
 		testJavaPathButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				// TODO 
 				chooseFolder(testJavaPath, Messages.getString("Preference.TestSourceFolderSelection.title"), Messages.getString("Preference.TestSourceFolderSelection.message"));
 			}
 		});
@@ -91,15 +90,14 @@ public class DefaultFolderPreference extends Composite{
 		testResourcesPath = new Text(group, SWT.BORDER);
 		testResourcesPath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		testResourcesPath.setText(store.getString("TestResourcesPath")); //$NON-NLS-1$
-		testResourcePathButton = new Button(group, SWT.BUTTON1);
-		testResourcePathButton.setText(Messages.getString("Preference.TestResourceBrowse")); //$NON-NLS-1$
-		testResourcePathButton.addSelectionListener(new SelectionAdapter() {
+		testResourcesPathButton = new Button(group, SWT.BUTTON1);
+		testResourcesPathButton.setText(Messages.getString("Preference.TestResourceBrowse")); //$NON-NLS-1$
+		testResourcesPathButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				// TODO 
 				chooseFolder(testResourcesPath, Messages.getString("Preference.TestResourceFolderSelection.title"), Messages.getString("Preference.TestResourceFolderSelection.message"));
 			}
 		});
-		testResourcePathButton.setEnabled(false);
+		testResourcesPathButton.setEnabled(false);
 		
 		new Label(this, SWT.NULL);
 		
@@ -140,17 +138,17 @@ public class DefaultFolderPreference extends Composite{
 	}
 	
 
-    public void store() {
-    	store.setValue(Constants.PREF_TEST_JAVA_PATH, testJavaPath.getText()); //$NON-NLS-1$
-    	store.setValue(Constants.PREF_TEST_RESOURCES_PATH, testResourcesPath.getText()); //$NON-NLS-1$
+    public void store(IPreferenceStore preferenceStore) {
+    	preferenceStore.setValue(Constants.PREF_TEST_JAVA_PATH, testJavaPath.getText()); //$NON-NLS-1$
+    	preferenceStore.setValue(Constants.PREF_TEST_RESOURCES_PATH, testResourcesPath.getText()); //$NON-NLS-1$
     	if(junti3Toggle.getSelection()) {
-    		store.setValue(Constants.PREF_TEST_GENERATION_TYPE, Messages.getString("Preference.JUnit3"));
+    		preferenceStore.setValue(Constants.PREF_TEST_GENERATION_TYPE, Messages.getString("Preference.JUnit3"));
     	} else if(jnit4Toggle.getSelection()) {
-    		store.setValue(Constants.PREF_TEST_GENERATION_TYPE, Messages.getString("Preference.JUnit4"));
+    		preferenceStore.setValue(Constants.PREF_TEST_GENERATION_TYPE, Messages.getString("Preference.JUnit4"));
     	} else if(s2unitToggle.getSelection()) {
-    		store.setValue(Constants.PREF_TEST_GENERATION_TYPE, Messages.getString("Preference.S2Unit"));
+    		preferenceStore.setValue(Constants.PREF_TEST_GENERATION_TYPE, Messages.getString("Preference.S2Unit"));
     	} else if(s2junit4Toggle.getSelection()) {
-    		store.setValue(Constants.PREF_TEST_GENERATION_TYPE, Messages.getString("Preference.S2JUnit4"));
+    		preferenceStore.setValue(Constants.PREF_TEST_GENERATION_TYPE, Messages.getString("Preference.S2JUnit4"));
     	} else {
     		throw new IllegalArgumentException("JUnit3, JUnit4, S2Unit, S2JUnit4 are not selected");
     	}
@@ -164,6 +162,30 @@ public class DefaultFolderPreference extends Composite{
     	s2unitToggle.setSelection(false);
     	s2junit4Toggle.setSelection(true);
     }
+
+    public void loadWorkspaceSetting() {
+    	IPreferenceStore workspaceStore = PreferenceStoreUtil.getPreferenceStoreOfWorkspace();
+    	testJavaPath.setText(workspaceStore.getString(Constants.PREF_TEST_JAVA_PATH));
+    	testResourcesPath.setText(workspaceStore.getString(Constants.PREF_TEST_RESOURCES_PATH));
+    	String storedValue = workspaceStore.getString(Constants.PREF_TEST_GENERATION_TYPE);
+    	junti3Toggle.setSelection(Messages.getString("Preference.JUnit3").equals(storedValue));
+    	jnit4Toggle.setSelection(Messages.getString("Preference.JUnit4").equals(storedValue));
+    	s2unitToggle.setSelection(Messages.getString("Preference.S2Unit").equals(storedValue));
+    	s2junit4Toggle.setSelection(Messages.getString("Preference.S2JUnit4").equals(storedValue));
+    }
+    
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		testJavaPath.setEnabled(enabled);
+		testJavaPathButton.setEnabled(enabled);
+		testResourcesPath.setEnabled(enabled);
+		testResourcesPathButton.setEnabled(enabled);
+		junti3Toggle.setEnabled(enabled);
+		jnit4Toggle.setEnabled(enabled);
+		s2unitToggle.setEnabled(enabled);
+		s2junit4Toggle.setEnabled(enabled);
+	}
 
 	private void chooseFolder(Text txt, String title, String message) {
 		SourceFolderTreeSelectionDialog dialog = new SourceFolderTreeSelectionDialog(getShell(), javaProject, title, message);

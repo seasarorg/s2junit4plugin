@@ -76,8 +76,8 @@ public class QuickJUnitPreferencePage extends PreferencePage implements IWorkben
     }
 
     public boolean performOk() {
-    	namingRulesPreference.store();
-		defaultFolderPreference.store();
+    	namingRulesPreference.store(getPreferenceStore());
+		defaultFolderPreference.store(getPreferenceStore());
         return true;
     }
 }

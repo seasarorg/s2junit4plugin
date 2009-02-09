@@ -29,4 +29,6 @@ public final class Constants {
 	
 	public static final String PREF_DEFAULT_TEST_GENERATION_TYPE = "S2JUnit4";
 
+	public static final String PREF_ENABLE_PROJECT_SETTING = "EnableProjectSetting";
+	
 }

@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.seasar.s2junit4plugin.Activator;
+import org.seasar.s2junit4plugin.Constants;
 
 
 
@@ -35,15 +36,15 @@ public class PreferenceStoreUtil {
 	 * プロジェクト固有の設定ストアを取得します。<br>
 	 * プロジェクト固有設定が行われていない場合はワークスペースの設定ストアを取得します。
 	 */
-//	public static IPreferenceStore getPreferenceStore(IProject project) {
-//		IPreferenceStore store = getPreferenceStoreOfProject(project);
-//		boolean isPrjCustom = store.getBoolean(MARKER_SEVERITY_ENABLE_PROJECT_CUSTOM);
-//		if (!isPrjCustom) {
-//			return getPreferenceStoreOfWorkspace();
-//		} else {
-//			return store;
-//		}
-//	}
+	public static IPreferenceStore getPreferenceStore(IProject project) {
+		IPreferenceStore store = getPreferenceStoreOfProject(project);
+		boolean isPrjCustom = store.getBoolean(Constants.PREF_ENABLE_PROJECT_SETTING);
+		if (!isPrjCustom) {
+			return getPreferenceStoreOfWorkspace();
+		} else {
+			return store;
+		}
+	}
 
 	/**
 	 * プロジェクト固有の設定ストアを取得します。

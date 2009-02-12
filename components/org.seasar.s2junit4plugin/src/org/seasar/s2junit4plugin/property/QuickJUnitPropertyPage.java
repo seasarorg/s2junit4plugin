@@ -115,6 +115,9 @@ public class QuickJUnitPropertyPage extends PropertyPage {
 		projectSettingButton.setSelection(false);
 		namingRulesPreference.loadWorkspaceSetting();
 		defaultFolderPreference.loadWorkspaceSetting();
+		tabFolder.setEnabled(false);
+		namingRulesPreference.setEnabled(false);
+		defaultFolderPreference.setEnabled(false);
 	}
 	
 	public boolean performOk() {

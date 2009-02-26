@@ -66,8 +66,11 @@ public abstract class QuickJUnitAction implements IEditorActionDelegate, IObject
             javaElement = null;
     }
 
-    protected IJavaProject[] getJavaProjects() throws JavaModelException {
-        return JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getJavaProjects();
+    protected IJavaProject[] getJavaProjects(IType type) throws JavaModelException {
+        // projectをまたぐ場合
+        //return JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getJavaProjects();
+        // projectをまたがない場合
+        return new IJavaProject[] {type.getJavaProject()};
     }
 
     protected void openInformation(IAction action, String message) {

@@ -67,7 +67,7 @@ public class JavaElements {
             if (superType.getFullyQualifiedName().equals(JavaTypes.TEST_INTERFACE_NAME))
                 return true;
         }
-        return false;
+        return hasSuiteMethod(type) || hasSuiteAnnotation(type) || hasTestAnnotation(type) || hasS2JUnit4Annotation(type);
     }
 
     public static IJavaElement getTestMethodOrClass(IJavaElement element)
@@ -96,7 +96,7 @@ public class JavaElements {
         return type.getSource() == null ? false:type.getSource().indexOf("@SuiteClasses") > -1;
 	}
     
-    private static boolean hasS2JUnit4Annotation(IType type) throws JavaModelException {
+    public static boolean hasS2JUnit4Annotation(IType type) throws JavaModelException {
         return type.getSource() == null ? false:type.getSource().indexOf("@RunWith(Seasar2.class)") > -1;
 	}
 
@@ -140,4 +140,9 @@ public class JavaElements {
                 Flags.isStatic(method.getFlags())
         );
     }
+
+    public static boolean isJUnit4(IType type) throws JavaModelException { 
+        return type.getJavaProject().findType("org.junit.Test") != null; //$NON-NLS-1$
+    }
+
 }

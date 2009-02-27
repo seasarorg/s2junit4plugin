@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.seasar.s2junit4plugin.Messages;
+import org.seasar.s2junit4plugin.action.MethodNamingRules;
 import org.seasar.s2junit4plugin.action.NamingRule;
 import org.seasar.s2junit4plugin.action.NamingRules;
 import org.seasar.s2junit4plugin.util.PreferenceStoreUtil;
@@ -74,10 +75,27 @@ public class NamingRulesPreference extends Composite {
     private Table table;
     private Button addButton;
     
+    private List mNamingRulesValue;
+    private CheckboxTableViewer mTableViewer;
+    private Button mRemoveButton;
+    private Button mEditButton;
+    private Button mMoveUpButton;
+    private Button mMoveDownButton;
+    private int mWidthHint;
+    private MethodNamingRules mNamingRules;
+
+    private Table mTable;
+    private Button mAddButton;
+
+    
     public NamingRulesPreference(IPreferenceStore store, Composite tabFolder, int widthHint) {
     	super(tabFolder, SWT.NULL);
     	namingRules = new NamingRules(store);
     	namingRulesValue = namingRules.get();
+    	
+    	mNamingRules = new MethodNamingRules(store);
+    	mNamingRulesValue = mNamingRules.get();
+    	
         GridLayout layout= new GridLayout();
         layout.numColumns= 1;
         layout.marginWidth= 0;
@@ -101,6 +119,10 @@ public class NamingRulesPreference extends Composite {
         container.setLayoutData(gd);
         createTable(container);
         createButtons(container);
+        
+        createMethodTable(container);
+        createMethodButtons(container);
+        
         updateView();
     }
 
@@ -216,11 +238,17 @@ public class NamingRulesPreference extends Composite {
      }
     private void updateView() {
         tableViewer.refresh();
+        mTableViewer.refresh();
         for (int i = 0; i < namingRulesValue.size(); ++i) {
             NamingRule namingRule = (NamingRule) namingRulesValue.get(i);
             tableViewer.setChecked(namingRule, namingRule.isEnabled());
         }
+        for (int i = 0; i < mNamingRulesValue.size(); ++i) {
+            NamingRule namingRule = (NamingRule) mNamingRulesValue.get(i);
+            mTableViewer.setChecked(namingRule, namingRule.isEnabled());
+        }
         updateButtons();
+        updateMethodButtons();
     }
 
     private void updateButtons() {
@@ -351,15 +379,21 @@ public class NamingRulesPreference extends Composite {
     	namingRules = new NamingRules(preferenceStore);
     	namingRules.set(namingRulesValue);
     	namingRulesValue = namingRules.get();
+    	
+    	mNamingRules = new MethodNamingRules(preferenceStore);
+    	mNamingRules.set(mNamingRulesValue);
+    	mNamingRulesValue = mNamingRules.get();
     }
     
     public void loadDefault() {
         this.namingRulesValue = namingRules.getDefault();
+        this.mNamingRulesValue = mNamingRules.getDefault();
         updateView();
     }
     
     public void loadWorkspaceSetting() {
         namingRulesValue = new NamingRules(PreferenceStoreUtil.getPreferenceStoreOfWorkspace()).get();
+        mNamingRulesValue = new MethodNamingRules(PreferenceStoreUtil.getPreferenceStoreOfWorkspace()).get();
         updateView();
     }
 
@@ -373,5 +407,205 @@ public class NamingRulesPreference extends Composite {
 		editButton.setEnabled(editButton.getEnabled() && enabled);
 		moveUpButton.setEnabled(moveUpButton.getEnabled() && enabled);
 		moveDownButton.setEnabled(moveDownButton.getEnabled() && enabled);
+		
+		updateMethodButtons();
+		mTable.setEnabled(enabled);
+		mAddButton.setEnabled(mAddButton.getEnabled() && enabled);
+		mRemoveButton.setEnabled(mRemoveButton.getEnabled() && enabled);
+		mEditButton.setEnabled(mEditButton.getEnabled() && enabled);
+		mMoveUpButton.setEnabled(mMoveUpButton.getEnabled() && enabled);
+		mMoveDownButton.setEnabled(mMoveDownButton.getEnabled() && enabled);
 	}
+	
+    private void createMethodTable(Composite container) {
+        Label label= new Label(container, SWT.NONE);
+        label.setText(Messages.getString("NamingRulesPreference.method.label")); //$NON-NLS-1$
+        GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+        gd.horizontalSpan = 2;
+        label.setLayoutData(gd);
+
+        mTable = new Table(container, SWT.CHECK | SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
+
+        gd= new GridData(GridData.FILL_HORIZONTAL);
+        mTable.setLayoutData(gd);
+
+        TableLayout tableLayout= new TableLayout();
+        ColumnLayoutData[] columnLayoutData= new ColumnLayoutData[1];
+        columnLayoutData[0]= new ColumnWeightData(100);
+        tableLayout.addColumnData(columnLayoutData[0]);
+        mTable.setLayout(tableLayout);
+        new TableColumn(mTable, SWT.NONE);
+        mTableViewer = new CheckboxTableViewer(mTable);
+        mTableViewer.setLabelProvider(new TableLabelProvider());
+        mTableViewer.setContentProvider(new MethodTableContentProvider());
+        mTableViewer.setInput(this);
+
+        gd = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL);
+        mTableViewer.getTable().setLayoutData(gd);
+        mTableViewer.addCheckStateListener(new ICheckStateListener() {
+            public void checkStateChanged(CheckStateChangedEvent event) {
+                NamingRule namingRule = (NamingRule) event.getElement();
+                namingRule.setEnabled(event.getChecked());
+                updateView();
+            }
+        });
+        mTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+                // unable if call update
+                updateMethodButtons();
+            }
+        });
+        mTableViewer.addDoubleClickListener(new IDoubleClickListener() {
+            public void doubleClick(DoubleClickEvent event) {
+                editMethodNamingRule();
+            }
+        });
+    }
+    private class MethodTableContentProvider implements IStructuredContentProvider {
+        public Object[] getElements(Object inputElement) {
+            return mNamingRulesValue.toArray();
+        }
+        public void dispose() {
+        }
+        public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        }
+    }
+
+    private void createMethodButtons(Composite container) {
+        Composite buttonContainer= new Composite(container, SWT.NONE);
+        GridData gd= new GridData(GridData.FILL_VERTICAL);
+        buttonContainer.setLayoutData(gd);
+        GridLayout buttonLayout= new GridLayout();
+        buttonLayout.numColumns= 1;
+        buttonLayout.marginHeight= 0;
+        buttonLayout.marginWidth= 0;
+        buttonContainer.setLayout(buttonLayout);
+
+        Listener listener;
+        listener = new Listener() {
+            public void handleEvent(Event e) {
+                addMethodNamingRule();
+            }};
+        mAddButton = createButton("addButton", buttonContainer, listener, true); //$NON-NLS-1$
+
+        listener = new Listener() {
+            public void handleEvent(Event e) {
+                removeMethodNamingRules();
+            }};
+        mRemoveButton = createButton("removeButton", buttonContainer, listener, false); //$NON-NLS-1$
+        mRemoveButton.setEnabled(false);
+
+        listener = new Listener() {
+            public void handleEvent(Event e) {
+                editMethodNamingRule();
+            }};
+        mEditButton = createButton("editButton", buttonContainer, listener, false); //$NON-NLS-1$
+        mEditButton.setEnabled(false);
+
+        listener = new Listener() {
+            public void handleEvent(Event e) {
+                moveMethodNamingRule(true);
+            }};
+        mMoveUpButton = createButton("moveUpButton", buttonContainer, listener, false); //$NON-NLS-1$
+        mMoveUpButton.setEnabled(false);
+
+        listener = new Listener() {
+            public void handleEvent(Event e) {
+                moveMethodNamingRule(false);
+            }};
+        mMoveDownButton = createButton("moveDownButton", buttonContainer, listener, false); //$NON-NLS-1$
+        mMoveDownButton.setEnabled(false);
+    }
+    
+    private void updateMethodButtons() {
+        mAddButton.setEnabled(true);
+        IStructuredSelection selection = (IStructuredSelection) mTableViewer.getSelection();
+        mEditButton.setEnabled(selection.size() == 1);
+        int rowCount = mTableViewer.getTable().getItemCount();
+        mRemoveButton.setEnabled(!selection.isEmpty() && rowCount > 1 && selection.size() != rowCount);
+        boolean canMove = selection.size() == 1 &&  rowCount > 1;
+        if (!canMove) {
+            mMoveUpButton.setEnabled(false);
+            mMoveDownButton.setEnabled(false);
+        } else {
+           int selectedIndex = mNamingRulesValue.indexOf(selection.getFirstElement());
+           mMoveUpButton.setEnabled(0 < selectedIndex);
+           mMoveDownButton.setEnabled(selectedIndex < rowCount - 1);
+        }
+    }
+
+    private void addMethodNamingRule() {
+        InputDialog dialog = createMethodEditDialog("addMethodNamingRule", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        if (dialog.open() == Window.OK) {
+            String value = dialog.getValue();
+            if (value.trim().length() != 0) {
+                NamingRule rule = new NamingRule(value, true);
+                mNamingRulesValue.add(rule);
+                updateView();
+            }
+        }
+    }
+    private void removeMethodNamingRules() {
+        IStructuredSelection selection = (IStructuredSelection) mTableViewer.getSelection();
+        if (selection.isEmpty())
+            return;
+        for (Iterator i = selection.iterator(); i.hasNext(); ) {
+        	mNamingRulesValue.remove(i.next());
+        }
+        updateView();
+    }
+    private void editMethodNamingRule() {
+        IStructuredSelection selection = (IStructuredSelection) mTableViewer.getSelection();
+        if (selection.isEmpty())
+            return;
+        NamingRule rule = (NamingRule) selection.getFirstElement();
+        InputDialog dialog = createMethodEditDialog("editMethodNamingRule", rule.getValue()); //$NON-NLS-1$
+        if (dialog.open() == Window.OK) {
+            String value = dialog.getValue();
+            if (value.trim().length() != 0) {
+                rule.setValue(value);
+                updateView();
+            }
+        }
+    }
+    private InputDialog createMethodEditDialog(String messageId, String initValue) {
+        String title = Messages.getString("NamingRulesPreference." + messageId + ".dialog.title"); //$NON-NLS-1$ //$NON-NLS-2$
+        String message = Messages.getString("NamingRulesPreference." + messageId + ".dialog.message"); //$NON-NLS-1$ //$NON-NLS-2$
+        return  new InputDialog(shell, title, message, initValue, new MethodNamingRuleValidator());
+    }
+    private static class MethodNamingRuleValidator implements IInputValidator {
+        public String isValid(String newText) {
+            newText = newText.trim();
+            if (newText.length() == 0)
+                return Messages.getString("NamingRulesPreference.namingRuleValidator.empty"); //$NON-NLS-1$
+
+            newText = newText.replaceAll("\\$\\{method\\}", "method"); //$NON-NLS-1$ //$NON-NLS-2$
+            if (!isJavaIdentifier(newText))
+                return Messages.getString("NamingRulesPreference.namingRuleValidator.tokenError", newText); //$NON-NLS-1$
+            return null;
+        }
+        private boolean isJavaIdentifier(String token) {
+            if (!Character.isJavaIdentifierStart(token.charAt(0)))
+                return false;
+            for (int i = 1; i < token.length(); ++i) {
+                if (!Character.isJavaIdentifierPart(token.charAt(i)))
+                return false;
+            }
+            return true;
+        }
+    }
+    private void moveMethodNamingRule(boolean up) {
+        IStructuredSelection selection = (IStructuredSelection) mTableViewer.getSelection();
+        if (selection.isEmpty() || selection.size() > 1)
+            return;
+        Object selected = selection.getFirstElement();
+        int oldIndex = mNamingRulesValue.indexOf(selected);
+        int newIndex = up ? oldIndex - 1: oldIndex + 1;
+        if (newIndex < 0 || mNamingRulesValue.size() <= newIndex)
+            return;
+        mNamingRulesValue.remove(oldIndex);
+        mNamingRulesValue.add(newIndex, selected);
+        updateView();
+    }
+
 }

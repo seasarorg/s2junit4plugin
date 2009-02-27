@@ -32,6 +32,23 @@
                label="%JUnitRunAction.label"
                menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions">
          </action>
+                  <action
+                        class="org.seasar.s2junit4plugin.action.OpenTestingPairMethodAction"
+                        definitionId="org.seasar.s2junit4plugin.command.OpenTestingPairMethodAction"
+                        id="org.seasar.s2junit4plugin.action.OpenTestingPairMethodAction"
+                        label="%OpenTestingPairMethodAction.label"
+                        menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions">
+                     <enablement>
+                        <or>
+                           <objectClass
+                                 name="org.eclipse.jdt.core.ICompilationUnit">
+                           </objectClass>
+                           <objectClass
+                                 name="org.eclipse.jdt.core.IMethod">
+                           </objectClass>
+                        </or>
+                     </enablement>
+                  </action>
          <action
                class="org.seasar.s2junit4plugin.action.OpenTestingPairAction"
                definitionId="org.seasar.s2junit4plugin.command.OpenTestingPairAction"
@@ -122,6 +139,12 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+9">
       </key>
+      <key
+            commandId="org.seasar.s2junit4plugin.command.OpenTestingPairMethodAction"
+            contextId="org.eclipse.jdt.ui.javaEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M3+9">
+      </key>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -158,6 +181,12 @@
             id="org.seasar.s2junit4plugin.command.openClassPair"
             name="Open TestCase Class Pair">
       </command>
+      <command
+            categoryId="org.seasar.s2junit4plugin.category"
+            description="%OpenTestingPairMethodAction.description"
+            id="org.seasar.s2junit4plugin.command.OpenTestingPairMethodAction"
+            name="%OpenTestingPairMethodAction.label">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.editorActions">
@@ -185,6 +214,13 @@
                definitionId="org.seasar.s2junit4plugin.command.JUnitRunAction"
                id="org.seasar.s2junit4plugin.action.JUnitRunAction"
                label="%JUnitRunAction.label"
+               menubarPath="Edit/org.seasar.s2junit4plugin.editorContribution.menu/additions">
+         </action>
+         <action
+               class="org.seasar.s2junit4plugin.action.OpenTestingPairMethodAction"
+               definitionId="org.seasar.s2junit4plugin.command.OpenTestingPairMethodAction"
+               id="org.seasar.s2junit4plugin.action.OpenTestingPairMethodAction"
+               label="%OpenTestingPairMethodAction.label"
                menubarPath="Edit/org.seasar.s2junit4plugin.editorContribution.menu/additions">
          </action>
          <action

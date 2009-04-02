@@ -24,6 +24,8 @@ public class JavaElements {
             return false;
         if(method.getElementName().startsWith("test")) return true;
         
+        if (hasS2JUnit4Annotation((IType)element.getParent())) return true;
+        
         return hasTestAnnotationOnMethod(method);
     }
 
@@ -62,6 +64,7 @@ public class JavaElements {
                 if (hasSuiteMethod(type)) return element;
                 if (hasSuiteAnnotation(type)) return element;
                 if (hasTestAnnotation(type)) return element;
+                if (hasS2JUnit4Annotation(type)) return element;
             }
             element = element.getParent();
         }
@@ -70,6 +73,10 @@ public class JavaElements {
 
     private static boolean hasSuiteAnnotation(IType type) throws JavaModelException {
         return type.getSource() == null ? false:type.getSource().indexOf("@SuiteClasses") > -1;
+	}
+    
+    private static boolean hasS2JUnit4Annotation(IType type) throws JavaModelException {
+        return type.getSource() == null ? false:type.getSource().indexOf("@RunWith(Seasar2.class)") > -1;
 	}
 
 	private static boolean isTestRunnerPassibleClass(IJavaElement element) throws JavaModelException {

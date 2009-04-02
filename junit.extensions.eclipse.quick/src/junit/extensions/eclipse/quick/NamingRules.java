@@ -68,7 +68,7 @@ public class NamingRules {
     public List getDefault() {
         List result = new ArrayList();
         result.add(new NamingRule("${package}.${type}Test", true));
-        result.add(new NamingRule("${package}.${type}PDETest", false));
+//        result.add(new NamingRule("${package}.${type}PDETest", false));
         return result;
     }
 }

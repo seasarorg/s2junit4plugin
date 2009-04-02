@@ -54,8 +54,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.seasar.s2junit4plugin.Messages;
-import org.seasar.s2junit4plugin.action.NamingRule;
-import org.seasar.s2junit4plugin.action.NamingRules;
+import junit.extensions.eclipse.quick.NamingRule;
+import junit.extensions.eclipse.quick.NamingRules;;
 
 
 public class NamingRulesPreference extends Composite {

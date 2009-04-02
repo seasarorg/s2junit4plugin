@@ -32,7 +32,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.seasar.s2junit4plugin.Messages;
 import org.seasar.s2junit4plugin.util.PreferenceStoreUtil;
-import org.seasar.s2junit4plugin.action.NamingRules;
+import junit.extensions.eclipse.quick.NamingRules;;
 
 
 public class QuickJUnitPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {

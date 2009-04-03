@@ -35,7 +35,7 @@ public class ExtensionSupport {
     }
 
     public static IWorkbenchWizard createNewTestCaseCreationWizard() throws CoreException {
-        return createWizard("org.eclipse.jdt.junit.wizards.NewTestCaseCreationWizard"); //$NON-NLS-1$
+		return createWizard("org.seasar.s2junit4plugin.wizards.NewS2JUnit4TestCaseCreationWizard"); //$NON-NLS-1$
     }
 
     protected static ILaunchShortcut createLaunchShortcut(final String namespace)

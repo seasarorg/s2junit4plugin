@@ -243,5 +243,15 @@
          </action>
       </actionSet>
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.eclipse.jdt.ui.java"
+            class="org.seasar.s2junit4plugin.wizard.NewS2JUnit4TestCaseCreationWizard"
+            icon="icons/icon32.png"
+            id="org.seasar.s2junit4plugin.wizards.NewS2JUnit4TestCaseCreationWizard"
+            name="New S2JUnit4/S2Unit TestCase">
+      </wizard>
+   </extension>
 
 </plugin>

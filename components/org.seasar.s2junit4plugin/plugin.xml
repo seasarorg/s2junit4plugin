@@ -19,21 +19,21 @@
             </groupMarker>
          </menu>
          <action
-               class="org.seasar.s2junit4plugin.action.JUnitDebugAction"
+               class="junit.extensions.eclipse.quick.JUnitDebugAction"
                definitionId="org.seasar.s2junit4plugin.command.JUnitDebugAction"
                id="org.seasar.s2junit4plugin.action.JUnitDebugAction"
                label="%JUnitDebugAction.label"
                menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions">
          </action>
          <action
-               class="org.seasar.s2junit4plugin.action.JUnitRunAction"
+               class="junit.extensions.eclipse.quick.JUnitRunAction"
                definitionId="org.seasar.s2junit4plugin.command.JUnitRunAction"
                id="org.seasar.s2junit4plugin.action.JUnitRunAction"
                label="%JUnitRunAction.label"
                menubarPath="org.seasar.s2junit4plugin.objectContribution.menu/additions">
          </action>
          <action
-               class="org.seasar.s2junit4plugin.action.OpenTestingPairAction"
+               class="junit.extensions.eclipse.quick.OpenTestingPairAction"
                definitionId="org.seasar.s2junit4plugin.command.OpenTestingPairAction"
                id="org.seasar.s2junit4plugin.action.OpenTestingPairAction"
                label="%OpenTestingPairAction.label"
@@ -174,21 +174,21 @@
             </separator>
          </menu>
          <action
-               class="org.seasar.s2junit4plugin.action.JUnitDebugAction"
+               class="junit.extensions.eclipse.quick.JUnitDebugAction"
                definitionId="org.seasar.s2junit4plugin.command.JUnitDebugAction"
                id="org.seasar.s2junit4plugin.action.JUnitDebugAction"
                label="%JUnitDebugAction.label"
                menubarPath="Edit/org.seasar.s2junit4plugin.editorContribution.menu/additions">
          </action>
          <action
-               class="org.seasar.s2junit4plugin.action.JUnitRunAction"
+               class="junit.extensions.eclipse.quick.JUnitRunAction"
                definitionId="org.seasar.s2junit4plugin.command.JUnitRunAction"
                id="org.seasar.s2junit4plugin.action.JUnitRunAction"
                label="%JUnitRunAction.label"
                menubarPath="Edit/org.seasar.s2junit4plugin.editorContribution.menu/additions">
          </action>
          <action
-               class="org.seasar.s2junit4plugin.action.OpenTestingPairAction"
+               class="junit.extensions.eclipse.quick.OpenTestingPairAction"
                definitionId="org.seasar.s2junit4plugin.command.OpenTestingPairAction"
                id="org.seasar.s2junit4plugin.action.OpenTestingPairAction"
                label="%OpenTestingPairAction.label"
@@ -242,6 +242,16 @@
                label="Open TestCase Class Pair">
          </action>
       </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.eclipse.jdt.ui.java"
+            class="org.seasar.s2junit4plugin.wizard.NewS2JUnit4TestCaseCreationWizard"
+            icon="icons/icon32.png"
+            id="org.seasar.s2junit4plugin.wizards.NewS2JUnit4TestCaseCreationWizard"
+            name="New S2JUnit4/S2Unit TestCase">
+      </wizard>
    </extension>
 
 </plugin>

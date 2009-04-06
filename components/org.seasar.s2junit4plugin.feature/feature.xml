@@ -230,4 +230,10 @@
          version="0.1.2.qualifier"
          unpack="false"/>
 
+   <plugin
+         id="junit.extensions.eclipse.quick"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
 </feature>
